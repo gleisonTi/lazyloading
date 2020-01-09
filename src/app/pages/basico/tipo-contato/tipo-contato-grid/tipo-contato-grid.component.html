@@ -1,0 +1,48 @@
+<kendo-grid
+  [data]="view | async"
+  [height]="600"
+  [loading]="loading"
+  (edit)="editHandler($event)"
+  (cancel)="cancelHandler($event)"
+  (save)="saveHandler($event)"
+  (remove)="removeHandler($event)"
+  (add)="addHandler($event)"
+  [pageSize]="gridState.take" [skip]="gridState.skip" [sort]="gridState.sort"
+  [filter]="gridState.filter"
+  filterable="menu"
+  [resizable]="true"
+  [pageable]="true" [sortable]="true"
+  (dataStateChange)="onStateChange($event)"
+>
+<kendo-grid-messages noRecords="Nenhum registro encontrado." filterFilterButton= "Filtrar"
+    filterClearButton="Limpar" filterContainsOperator="Contém">
+</kendo-grid-messages>
+  <ng-template kendoGridToolbarTemplate>
+      <div class="row d-flex mx-3 justify-content-between">
+        <div kendoTooltip position="right">
+          <button kendoGridAddCommand title="Novo Cadastro" >Novo </button>
+        </div>
+        <a kendoTooltip position="left"
+          tooltipWidth="400"
+          [title]="getHelp('Colecao','Tela')?.helpTexto" class="nav-link"><i
+            class="icon-info"></i></a>
+      </div>
+  </ng-template>
+  <kendo-grid-column field="TipoContatoDescricao" title="Descrição">
+      <ng-template kendoGridHeaderTemplate let-column
+      let-columnIndex="columnIndex" >
+      <span kendoTooltip [title]="getHelp(column.field,'Atributo')?.helpTexto">{{column.title}}</span>
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-command-column title="" width="220">
+      <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+          <button kendoGridEditCommand [primary]="true">Editar</button>
+          <button kendoGridRemoveCommand>Apagar</button>
+          <button kendoGridSaveCommand [disabled]="formGroup?.invalid">{{ isNew ? 'Adicionar' : 'Atualizar' }}</button>
+          <button kendoGridCancelCommand>{{ isNew ? 'Cancelar' : 'Cancelar' }}</button>
+          <i kendoTooltip *ngIf="!isNew"  class="icon-user ml-2" title="Usuário:
+      {{dataItem.TipoContatoAlteracaoUsuario}} Data: {{dataItem.TipoContatoAlteracaoData   | date:'short'}}"></i>
+      </ng-template>
+  </kendo-grid-command-column>
+</kendo-grid>

@@ -1,0 +1,145 @@
+
+
+<kendo-window top="showGrid ? '30' : '60'" [left]="showGrid ? '200' : '400'"
+  title="Pesquisar
+  Produto"
+  *ngIf="openedSearchProduto"
+  (close)="close()" [minWidth]="300" [width]="showGrid ? '1000' : '600'"
+  [height]="showGrid ? '650' : '200'">
+  <div class="d-flex flex-row justify-content-center align-items-center my-3">
+    <input focus="true" class="w-75 px-2" kendoTextBox type="text"
+      placeholder="Filtrar por Código de barras, Descrição, Grupo, Fabricante,
+      Atributo."
+      (keyup)="getText($event.target.value)"
+      (keyup.enter)="searchfunction($event.target.value)">
+    <button class="mx-2" kendoButton [icon]="'search'" (click)="search()"
+      [primary]="true"></button>
+  </div>
+
+
+  <div *ngIf="showGrid">
+    <kendo-grid
+      #grid
+      [data]="view | async"
+      [height]="500"
+      [loading]="loading"
+      (edit)="editHandler($event)"
+      [selectable]="true"
+      (selectedKeysChange)="onSelectedKeysChange($event)"
+      [kendoGridSelectBy]="mySelectionKey"
+      [selectedKeys]="mySelection"
+      (dblclick)="doubleClickHandler(grid, $event)"
+      (cancel)="cancelHandler($event)"
+      (save)="saveHandler($event)"
+      (remove)="removeHandler($event)"
+      (add)="addHandler($event)"
+      [pageSize]="gridState.take" [skip]="gridState.skip"
+      [sort]="gridState.sort"
+      [filter]="gridState.filter"
+      [resizable]="true"
+      [pageable]="true" [sortable]="true"
+      (dataStateChange)="onStateChange($event)">
+      <kendo-grid-messages noRecords="Nenhum registro encontrado."
+        filterFilterButton="Filtrar"
+        filterClearButton="Limpar" filterContainsOperator="Contém">
+      </kendo-grid-messages>
+
+      <kendo-grid-column field="ProdutoDescricao" title="Descrição">
+        <ng-template kendoGridHeaderTemplate let-column
+          let-columnIndex="columnIndex">
+          <span kendoTooltip
+            [title]="getHelp(column.field,'Produto')?.helpTexto">{{column.title}}</span>
+        </ng-template>
+        <ng-template kendoGridCellTemplate let-rowIndex="rowIndex" let-dataItem>
+          <span>{{dataItem.ProdutoDescricao }}</span>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column title="Disponivel"
+        width="200">
+        <ng-template kendoGridCellTemplate let-rowIndex="rowIndex" let-dataItem>
+          {{dataItem.ProdutoEstoqueQuantidade | number: '1.0-0'}}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="ProdutoPreco" title="Preço" width="250">
+        <ng-template kendoGridCellTemplate let-filter let-dataItem>
+          {{dataItem.ProdutoPreco | currency:'BRL'}}
+        </ng-template>
+      </kendo-grid-column>
+      <ng-template kendoGridDetailTemplate let-dataItem
+        *ngIf="typePanel === 'Pedido'">
+        <div *ngIf="possuiValor(dataItem) && possuiQuantidade(dataItem)">
+          <form [formGroup]="itemformGroup">
+            <div class="d-flex flex-row mx-2 align-items-end">
+              <div class="w-75">
+                <kendo-textbox-container class='m-2' floatingLabel="Quantidade">
+                  <input focus=true kendoTextBox
+                    formControlName="Quantidade"
+                    type="number" min="1"
+                    (focusout)="focusOutQuantidade(dataItem.ProdutoEstoqueQuantidade,
+                    $event.target.value)"
+                    (keyup)="verificaQuantidade(dataItem.ProdutoEstoqueQuantidade,
+                    $event.target.value)"
+                    max="{{dataItem.ProdutoEstoqueQuantidade}}" class="mx-1">
+                </kendo-textbox-container>
+                <kendo-textbox-container class='m-2' floatingLabel="% de
+                  Desconto">
+                  <input kendoTextBox
+                    formControlName="DescontoPercent"
+                    type="text"
+                    mask="percent" suffix="%"
+                    step='0.01' min="0" max="99.99"
+                    class="mx-1">
+                </kendo-textbox-container>
+                <!-- <kendo-textbox-container class='m-2' floatingLabel="% de
+                  comissão">
+                  <input kendoTextBox
+                    formControlName="ComissaoPercent"
+                    type="text" min="1"
+                    mask="percent" suffix="%"
+                    step='0.01' min="0" max="99.99"
+                    class="mx-1">
+                </kendo-textbox-container> -->
+              </div>
+              <div class="w-25">
+                <div class="d-flex flex-row border border-primary rounded
+                  justify-content-between">
+                  <div class="d-flex flex-column px-2 py-1">
+                    <small>Valor total</small>
+                    <h4 class="w-100">
+                      {{calcularValorItem(dataItem) | currency:'BRL' }}
+                    </h4>
+                  </div>
+                  <div>
+
+                  </div>
+                  <button class="d-flex" kendoButton (click)="setItensCart()"
+                    [primary]="true"
+                    [disabled]="itemformGroup.invalid">
+                    Adicionar
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </form>
+        </div>
+        <div *ngIf="!possuiValor(dataItem)">
+          <span>Produto não possui valor em sua tabela de preço. Para adicionar
+            um valor ao produto <a class='text-primary'
+              (click)="cadPrecoProduto()">clique aqui</a>
+          </span>
+        </div>
+        <div *ngIf="!possuiQuantidade(dataItem)">
+          <span>Produto não esta disponível no momento. Para adicionar estoque
+            neste produto <a class='text-primary'
+              (click)="produtoEstoque()">clique aqui</a>
+          </span>
+        </div>
+        <!-- <ng-template #quantidade>
+          <span>Quantidade do produto indisponivel</span>
+        </ng-template> -->
+      </ng-template>
+    </kendo-grid>
+  </div>
+</kendo-window>

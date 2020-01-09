@@ -1,0 +1,93 @@
+<kendo-grid
+  [data]="view | async"
+  [height]="600"
+  (edit)="editHandler($event)"
+  (cancel)="cancelHandler($event)"
+  (save)="saveHandler($event)"
+  (remove)="removeHandler($event)"
+  [selectable]="true"
+  (add)="addHandler($event)"
+  [pageSize]="gridState.take" [skip]="gridState.skip" [sort]="gridState.sort"
+  [filter]="gridState.filter"
+  [pageable]="true" [sortable]="true"
+  (selectionChange)="selectionChange($event)"
+  (dataStateChange)="onStateChange($event)">
+  <ng-template kendoGridToolbarTemplate>
+    <div class="row d-flex mx-3 justify-content-between">
+      <div kendoTooltip position="right" class="row d-inline-flex">
+        <button type="submit" kendoGridAddCommand primary="true" [icon]="'image'" title="Inserir Imagem"></button>
+        <!-- <button kendoButton  primary="true" [look]="'flat'"></button> -->
+        <div class="ml-3" *ngIf="isitemSelected">
+            <button kendoButton [icon]="'check'" primary="true" (click)="itemSelecionado()" [look]="'flat'"></button>
+        </div>
+      </div>
+      <a kendoTooltip position="left"
+        tooltipWidth="400"
+        [title]="getHelp('Imagem','Tela')?.helpTexto" class="nav-link"><i
+          class="icon-info"></i></a>
+    </div>
+
+  </ng-template>
+
+  <kendo-grid-column field="Imagem" title="Imagens"  >
+    <ng-template kendoGridHeaderTemplate let-column
+      let-columnIndex="columnIndex">
+      <span kendoTooltip [title]="getHelp(column.field,'Atributo')?.helpTexto">{{column.title}}</span>
+    </ng-template>
+
+    <ng-template kendoGridCellTemplate let-dataItem>
+      <div class="row col-md-12" >
+        <div class="col-md-2">
+            <img class="img-thumbnail" src="{{baseUrl}}{{dataItem.Imagem}}" height="100" width="100">
+        </div>
+        <div class="col-md-10 d-flex align-items-center">
+            <h5>{{getNameImagem(dataItem.Imagem)}}</h5>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template
+      kendoGridEditTemplate
+      let-formGroup="formGroup"
+      let-isNew="isNew">
+      <div class="d-flex justify-content-center align-items-center">
+        <div class="d-flex flex-column justify-content-center align-items-center"  >
+            <div class="m-3">
+                <img class="img-thumbnail" [src]="geturlImagem()" height="100" width="100">
+              </div>
+              <div class="m-3">
+                  <div class="custom-file" id="customFile" lang="es">
+                      <input type="file" class="custom-file-input" (change)="getImageEvent($event.target.files)"  aria-describedby="fileHelp">
+                      <label class="custom-file-label" for="exampleInputFile">
+                        {{nameImage}}
+                      </label>
+              </div>
+              </div>
+        </div>
+      </div>
+    </ng-template>
+
+  </kendo-grid-column>
+
+  <kendo-grid-command-column title="Opções" width="220">
+    <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+      <button kendoGridEditCommand [primary]="true">Editar</button>
+      <button kendoGridRemoveCommand>Apagar</button>
+      <button kendoGridSaveCommand [disabled]="formGroup?.invalid">{{ isNew ?
+        'Adicionar' : 'Atualizar' }}</button>
+      <button kendoGridCancelCommand>{{ isNew ? 'Cancelar' : 'Cancelar' }}</button>
+      <i kendoTooltip *ngIf="!isNew" class="icon-user ml-2" title="Usuário:
+        {{dataItem.VariacaoImagemUsuario}} Data: {{dataItem.VariacaoImagemData |
+        date:'shortDate'}} Hora:
+        {{dataItem.VariacaoImagemHora}}"></i>
+    </ng-template>
+  </kendo-grid-command-column>
+</kendo-grid>
+<script>
+    $('#exampleInputFile').on('change',function(){
+        //get the file name
+        var fileName = $(this).val();
+        //replace the "Choose a file" label
+        $(this).next('.custom-file-label').html(fileName);
+    })
+</script>

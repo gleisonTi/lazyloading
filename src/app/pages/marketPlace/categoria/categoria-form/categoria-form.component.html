@@ -1,0 +1,330 @@
+<div class="bg-white text-dark">
+    <div class="row d-flex justify-content-between mx-2">
+        <div>
+            <ng-template #title>
+                <h5 class="mt-3">{{formGroup.value.CategoriaDescricao}}</h5>
+            </ng-template>
+        </div>
+        <div class="row d-flex justify-content-end">
+            <div *ngIf="created">
+                <h5 class="text-success mt-2 mx-3">Categoria salva com sucesso</h5>
+            </div>
+            <div class='m-2'>
+                <button kendoButton (click)="salvarDados()" [disabled]="formGroup.invalid"
+                    [primary]="true">Salvar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<kendo-tabstrip (tabSelect)="atualizaCategorias()" tabPosition="left">
+    <kendo-tabstrip-tab [title]="'Geral'" [selected]="true">
+        <ng-template kendoTabContent>
+            <form [formGroup]="formGroup">
+                <div class="d-flex flexrow flex-nowrap">
+                    <div class="d-flex justify-content-center ml-auto w-50 my-2 p-1">
+                        <h5>Cadastro de categoria</h5>
+                    </div>
+                    <div class="justify-content-center w-25 mt-2 d-flex">
+                        <p class="mt-1 mx-1">Inativo</p>
+                        <div>
+                            <kendo-switch formControlName="CategoriaInativo"></kendo-switch>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <div *ngIf="formGroup.invalid" class="error-msg">
+                        <div *ngIf="formGroup.dirty" class="text-danger"><small>*Os
+                                Campos em destaque são obrigatórios</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-row flex-nowrap">
+
+                    <div class="d-flex flex-column w-50 mt-3">
+                        <kendo-textbox-container class="w-100" floatingLabel="Categoria">
+                            <input kendoTextBox kendoTooltip formControlName="CategoriaNome" [title]="" />
+                        </kendo-textbox-container>
+                    </div>
+
+
+                    <div class="d-flex flex-column p-3">
+
+                        <div class="d-flex flex-column">
+                            <small>Marketplace</small>
+                        </div>
+
+                        <kendo-dropdownlist formControlName="MktPlaceId" [defaultItem]="{ descricao: 'Marketplaces...', MktPlaceId:
+                        '00000000-0000-0000-0000-000000000000'  }" [valuePrimitive]="true" [data]="mktList"
+                            [valuePrimitive]="true" [textField]="'descricao'" [valueField]="'MktPlaceId'">
+                        </kendo-dropdownlist>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column mt-3">
+                    <span>Descrição principal</span>
+                    <kendo-editor style="height: 250px;" [formControl]="formGroup.get('CategoriaDescricao')">
+                    </kendo-editor>
+                </div>
+            </form>
+
+        </ng-template>
+    </kendo-tabstrip-tab>
+
+    <kendo-tabstrip-tab [title]="'SEO'">
+        <ng-template kendoTabContent>
+            <kendo-tabstrip>
+                <kendo-tabstrip-tab [title]="'Geral'" [selected]="true">
+                    <ng-template kendoTabContent>
+                        <div class="w-100">
+                            <form [formGroup]="formGroup">
+                                <div class="row ml-1 my-1">
+                                    <div class="d-flex w-100 p-1 my-2 justify-content-center">
+                                        <h5>Cadastro SEO da categoria</h5>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-center mx-3">
+                                    <div *ngIf="formGroup.invalid" class="error-msg">
+                                        <div *ngIf="formGroup.dirty" class="text-danger">
+                                            <small>
+                                                *Os Campos em destaque são obrigatórios
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex">
+                                    <kendo-textbox-container class="w-50" floatingLabel="Título da página">
+                                        <input kendoTextBox kendoTooltip formControlName="CategoriaTitulo" [title]="" />
+                                        <div *ngIf="formGroup.controls['CategoriaTitulo'].errors &&
+                                                formGroup.controls['CategoriaTitulo'].dirty" class="error-msg">
+                                            <div [hidden]="!formGroup.controls['CategoriaTitulo'].errors"
+                                                class="text-danger">
+                                                <small>
+                                                    Campo Obrigatório
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </kendo-textbox-container>
+                                </div>
+                            </form>
+                        </div>
+                    </ng-template>
+                </kendo-tabstrip-tab>
+
+                <kendo-tabstrip-tab [title]="'Meta Descrição'">
+                    <ng-template kendoTabContent>
+                        <div class="w-100">
+                            <form [formGroup]="formGroup">
+
+                                <div class="row">
+                                    <div class="w-100 p-3">
+                                        <kendo-editor style="height: 250px;"
+                                            [formControl]="formGroup.get('CategoriaMetaDescricao')">
+                                        </kendo-editor>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+
+                    </ng-template>
+                </kendo-tabstrip-tab>
+
+                <kendo-tabstrip-tab [title]="'Meta palavras-chave'">
+                    <ng-template kendoTabContent>
+                        <div class="w-100">
+                            <form [formGroup]="formGroup">
+
+                                <div class="row">
+                                    <div class="w-100 p-3">
+                                        <kendo-editor style="height: 250px;"
+                                            [formControl]="formGroup.get('CategoriaPalavraChave')">
+                                        </kendo-editor>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+
+                    </ng-template>
+                </kendo-tabstrip-tab>
+            </kendo-tabstrip>
+        </ng-template>
+    </kendo-tabstrip-tab>
+
+    <kendo-tabstrip-tab  [title]="'Dados'">
+        <ng-template kendoTabContent>
+            <div class="w-100">
+                <form [formGroup]="formGroup">
+                    <div class="row">
+                        <div class="d-flex w-100 p-1 my-2 justify-content-center">
+                            <h5>Cadastro de dados da categoria</h5>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-column">
+                        <small>Categoria pai </small>
+                        <kendo-dropdownlist
+                          class="col-md-6 p-0"
+                          [formControl]="formGroup.get('CategoriaPaiId')"
+                          [valuePrimitive]="true"
+                          [defaultItem]="{ 
+                          CategoriaNome: '(Nenhum)',
+                          CategoriaId: '00000000-0000-0000-0000-000000000000' }"
+                          [data]="CategoriaList"
+                          [filterable]="true"
+                          [textField]="'CategoriaNome'"
+                          [valueField]="'CategoriaId'"
+                          (filterChange)="handleFilterCategoria($event)">
+                        </kendo-dropdownlist>
+                      </div>
+
+                    <div class="d-flex flex-row flex-nowrap align-items-center">
+                        <div class="d-flex flex-column mr-2">
+                            <div class="d-flex justify-content-center">
+                                <small class="mb-2">Ícone</small>
+                            </div>
+
+                            <div class="d-flex justify-content-center">
+                                <img class="img-thumbnail" [src]="getUrlIconeCategoria()" height="85" width="100">
+                            </div>
+
+                            <div class="d-flex justify-content-center">
+                                <div class="custom-file" lang="pt">
+                                    <input type="file" id="inputIcone" class="custom-file-input"
+                                        (change)="getImageEventIcone($event.target.files)">
+                                    <label id="labelEscondida" class="custom-file-label" for="inputIcone"></label>
+                                </div>
+                            </div>
+
+                            <div formGroupName="ImageIcone">
+                                <kendo-textbox-container floatingLabel="Nome ícone">
+                                    <input for="inputIcone" kendoTextBox formControlName="NomeImagem" />
+                                </kendo-textbox-container>
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-column mx-2">
+                            <div class="d-flex justify-content-center">
+                                <small class="mb-2">Banner Categoria</small>
+                            </div>
+
+                            <div class="d-flex justify-content-center">
+                                <img class="img-thumbnail" [src]="getUrlIconeBanner()" height="85" width="100">
+                            </div>
+
+                            <div class="d-flex justify-content-center">
+                                <div class="custom-file" lang="pt">
+                                    <input type="file" id="inputBanner" class="custom-file-input"
+                                        (change)="getImageEventBanner($event.target.files)">
+                                    <label id="labelBannerInput" class="custom-file-label" for="inputBanner">
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div formGroupName="ImageBanner">
+                                <kendo-textbox-container floatingLabel="Nome banner">
+                                    <input for="labelBannerInput" kendoTextBox formControlName="NomeImagem" />
+                                </kendo-textbox-container>
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-column mx-2">
+
+                            <div class="d-flex justify-content-center">
+                                <small class="mb-2">Banner Submenu</small>
+                            </div>
+
+                            <div class="d-flex justify-content-center">
+                                <img class="img-thumbnail" width="100" [src]="getUrlIconeSubmenu()">
+                            </div>
+
+                            <div class="d-flex justify-content-center">
+                                <div class="custom-file" lang="pt">
+                                    <input type="file" id="inputSubmenu" class="custom-file-input"
+                                        (change)="getImageEventSubmenu($event.target.files)">
+                                    <label id="labelSubmenu" class="custom-file-label" for="inputSubmenu">
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div formGroupName="ImageSubmenu">
+                                <kendo-textbox-container floatingLabel="Nome submenu">
+                                    <input for="inputSubmenu" kendoTextBox formControlName="NomeImagem" />
+                                </kendo-textbox-container>
+                            </div>
+                        </div>
+
+
+                        <div class="d-flex flex-column ml-4 mt-3">
+                            <div class="d-flex">
+                                <h5 class="m-2">Exibição</h5>
+                            </div>
+
+                            <div class="d-flex">
+                                <label class="k-form-field right m-2">
+                                    <input type="checkbox" id="ClienteTipoFornecedor" class="k-checkbox"
+                                        formControlName="CategoriaExibir" />
+                                    <label class="k-checkbox-label" for="ClienteTipoFornecedor">Menu
+                                        superior</label>
+                                </label>
+                            </div>
+
+                            <div class="d-flex">
+                                <label class="k-form-field right m-2">
+                                    <input type="checkbox" id="CategoriaExibirInformativo" class="k-checkbox"
+                                        formControlName="CategoriaExibirInformativo" />
+                                    <label class="k-checkbox-label" for="CategoriaExibirInformativo">Menu
+                                        informativo</label>
+                                </label>
+                            </div>
+
+                            <div class="d-flex">
+                                <label class="k-form-field right m-2">
+                                    <input type="checkbox" id="CategoriaExLateral" class="k-checkbox"
+                                        formControlName="CategoriaExLateral" />
+                                    <label class="k-checkbox-label" for="CategoriaExLateral">Coluna
+                                        esquerda</label>
+                                </label>
+                            </div>
+
+                            <div class="d-flex">
+                                <label class="k-form-field right m-2">
+                                    <input type="checkbox" id="CategoriaRetirarLink" class="k-checkbox"
+                                        formControlName="CategoriaRetirarLink" />
+                                    <label class="k-checkbox-label" for="CategoriaRetirarLink">Retirar
+                                        link</label>
+                                </label>
+                            </div>
+
+                            <div class="d-flex">
+                                <label class="k-form-field right m-2">
+                                    <input type="checkbox" id="CategoriaEstoque" class="k-checkbox"
+                                        formControlName="CategoriaEstoque" />
+                                    <label class="k-checkbox-label" for="CategoriaEstoque">Controla
+                                        estoque</label>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-row">
+                        <div class="d-flex flex-column mr-2">
+                            <kendo-textbox-container floatingLabel="Número de colunas">
+                                <input kendoTextBox formControlName="CategoriaColunas" />
+                            </kendo-textbox-container>
+                        </div>
+
+                        <div class="d-flex flex-column mx-2">
+                            <kendo-textbox-container floatingLabel="Ordem">
+                                <input kendoTextBox formControlName="CategoriaOrdem" />
+                            </kendo-textbox-container>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </ng-template>
+    </kendo-tabstrip-tab>
+</kendo-tabstrip>

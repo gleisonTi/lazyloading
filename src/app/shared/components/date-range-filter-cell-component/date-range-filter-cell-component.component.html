@@ -1,0 +1,43 @@
+
+
+   <kendo-daterange>
+      <label class="mx-2">
+          <small class="label">Data inicial</small>
+          <kendo-dateinput kendoDateRangeStartInput [value]="start" (valueChange)="filterRange($event, end) "
+          ></kendo-dateinput>
+      </label>
+      <label class="mx-2" >
+          <small  class="label">Data final</small>
+          <kendo-dateinput #endDateInput kendoDateRangeEndInput [value]="end" (valueChange)="filterRange(start, $event)" (valueChange)="popup.toggle(false)"
+          ></kendo-dateinput>
+      </label>
+      <kendo-daterange-popup
+        #popup
+        [anchorAlign]="{ horizontal: 'left', vertical: 'bottom' }"
+        [popupAlign]="{ horizontal: 'left', vertical: 'top' }"
+      ></kendo-daterange-popup>
+  </kendo-daterange>
+
+<!-- <div>
+    <kendo-daterange>
+        <kendo-dateinput
+             kendoDateRangeStartInput
+             [value]="start"
+             (valueChange)="filterRange($event, end)"
+             style="width:120px">
+         </kendo-dateinput>
+         <kendo-dateinput
+             kendoDateRangeEndInput
+             [value]="end"
+             (valueChange)="filterRange(start, $event)"
+             style="width:120px">
+         </kendo-dateinput>
+     </kendo-daterange>
+    </div>
+ <button
+     *ngIf="hasFilter"
+     class="k-button k-button-icon"
+     title="Clear"
+     (click)="clearFilter()">
+     <span class="k-icon k-i-filter-clear"></span>
+ </button> -->

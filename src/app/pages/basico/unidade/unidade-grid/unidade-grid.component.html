@@ -1,0 +1,150 @@
+<kendo-grid
+  [data]="view | async"
+  [height]="600"
+  [loading]="loading"
+  (edit)="editHandler($event)"
+  (cancel)="cancelHandler($event)"
+  (save)="saveHandler($event)"
+  (remove)="removeHandler($event)"
+  (add)="addHandler($event)"
+  [pageSize]="gridState.take" [skip]="gridState.skip" [sort]="gridState.sort"
+  [filter]="gridState.filter"
+  filterable="menu"
+  [resizable]="true"
+  [pageable]="true" [sortable]="true"
+  (dataStateChange)="onStateChange($event)">
+  <kendo-grid-messages noRecords="Nenhum registro encontrado."
+    filterFilterButton="Filtrar"
+    filterClearButton="Limpar" filterContainsOperator="Contém">
+  </kendo-grid-messages>
+  <ng-template kendoGridToolbarTemplate>
+    <div class="row d-flex mx-3 justify-content-between">
+      <div kendoTooltip position="right">
+        <button kendoGridAddCommand title="Nova Unidade">Novo </button>
+        <button [icon]="'file-excel'" kendoGridExcelCommand>Excel</button>
+        <button [icon]="'file-pdf'" kendoGridPDFCommand>PDF</button>
+      </div>
+      <a kendoTooltip position="left"
+        tooltipWidth="400"
+        [title]="getHelp('Unidade','Tela')?.helpTexto" class="nav-link"><i
+          class="icon-info"></i></a>
+    </div>
+  </ng-template>
+  <kendo-grid-column field="UnidadeDescricao" title="Descrição">
+    <ng-template kendoGridFilterMenuTemplate let-filter let-column="column"
+      let-filterService="filterService">
+      <incca-input-filter
+        [filter]="filter"
+        valueField="UnidadeDescricao">
+      </incca-input-filter>
+    </ng-template>
+    <ng-template
+      kendoGridEditTemplate>
+      <input
+        #ddl="popupAnchor"
+        popupAnchor
+        (keyup)="criarAbreviacao($event.target.value)"
+        kendoTextBox
+        [formControl]="formGroup.get('UnidadeDescricao')"
+        />
+      <kendo-popup
+        [anchor]="ddl.element"
+        *ngIf="formGroup.get('UnidadeDescricao').invalid &&
+        !(isNew && formGroup.get('UnidadeDescricao').untouched)"
+        popupClass="k-widget
+        k-tooltip k-tooltip-validation k-invalid-msg">
+        <span class="k-icon k-i-warning"></span>
+        Obrigatório uma descrição
+      </kendo-popup>
+    </ng-template>
+    <ng-template kendoGridHeaderTemplate let-column
+      let-columnIndex="columnIndex">
+      <span kendoTooltip [title]="getHelp(column.field,'Atributo')?.helpTexto">{{column.title}}</span>
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-column field="UnidadeAbreviatura" title="Abreviatura"
+    [filterable]="false" [sortable]="false">
+    <ng-template kendoGridHeaderTemplate let-column
+      let-columnIndex="columnIndex">
+      <span kendoTooltip [title]="getHelp(column.field,'Atributo')?.helpTexto">{{column.title}}</span>
+    </ng-template>
+
+    <ng-template
+    kendoGridEditTemplate>
+    <input
+      #ddl="popupAnchor"
+      popupAnchor
+      kendoTextBox
+      [formControl]="formGroup.get('UnidadeAbreviatura')"
+      />
+    <kendo-popup
+      [anchor]="ddl.element"
+      *ngIf="formGroup.get('UnidadeAbreviatura').invalid &&
+      !(isNew && formGroup.get('UnidadeAbreviatura').untouched)"
+      popupClass="k-widget
+      k-tooltip k-tooltip-validation k-invalid-msg">
+      <span class="k-icon k-i-warning"></span>
+      Obrigatório uma abreviação
+    </kendo-popup>
+  </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-column field="UnidadeUtilizaGrade" title="Utiliza Grade"
+    editor="boolean"
+    [filterable]='false'>
+    <ng-template kendoGridHeaderTemplate let-column
+      let-columnIndex="columnIndex">
+      <span kendoTooltip [title]="getHelp(column.field,'Atributo')?.helpTexto">{{column.title}}</span>
+    </ng-template>
+    <ng-template kendoGridCellTemplate let-dataItem>
+      <label class="k-form-field right">
+        <input
+          type="checkbox"
+          id="checkOnClick"
+          class="k-checkbox"
+          [checked]="dataItem.UnidadeUtilizaGrade"
+          />
+        <label class="k-checkbox-label" for="checkChildren"></label>
+      </label>
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-command-column title="Opções" width="220">
+    <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+
+        <div *ngIf="dataItem.UnidadeId !== 'Un'; else default">
+            <button kendoGridEditCommand [primary]="true">Editar</button>
+            <button kendoGridRemoveCommand>Apagar</button>
+            <button kendoGridSaveCommand [disabled]="formGroup?.invalid">{{ isNew ?
+              'Adicionar' : 'Atualizar' }}</button>
+            <button kendoGridCancelCommand>{{ isNew ? 'Cancelar' : 'Cancelar' }}</button>
+          </div>
+        <ng-template #default >
+              Padrão do sistema
+        </ng-template>
+      <!-- <i kendoTooltip *ngIf="!isNew" class="icon-user ml-2" title="Usuário:
+        {{dataItem.ColecaoUsuario}} Data: {{dataItem.ColecaoData |
+        date:'short'}}"></i> -->
+    </ng-template>
+  </kendo-grid-command-column>
+
+
+  <kendo-grid-excel fileName="Unidades.xlsx"></kendo-grid-excel>
+
+  <kendo-grid-pdf fileName="Unidades.pdf" [allPages]="true" paperSize="A4"
+  [repeatHeaders]="true" [landscape]="true">
+  <kendo-grid-pdf-margin top="2cm" left="1cm" right="1cm" bottom="2cm"></kendo-grid-pdf-margin>
+  <ng-template kendoGridPDFTemplate let-pageNum="pageNum"
+    let-totalPages="totalPages">
+    <div class="page-template">
+      <div class="header">
+        <div style="float: right" >Page {{ pageNum }} of {{ totalPages }}</div>
+      </div>
+      <div class="footer">
+        Pagina {{ pageNum }} de {{ totalPages }}
+      </div>
+    </div>
+  </ng-template>
+</kendo-grid-pdf>
+</kendo-grid>

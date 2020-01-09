@@ -1,0 +1,130 @@
+<kendo-grid
+  [data]="view | async"
+  [height]="400"
+  [loading]="loading"
+  (edit)="editHandler($event)"
+  (cancel)="cancelHandler($event)"
+  (save)="saveHandler($event)"
+  [resizable]="true"
+  (remove)="removeHandler($event)"
+  (add)="addHandler($event)"
+  [pageSize]="gridState.take" [skip]="gridState.skip" [sort]="gridState.sort"
+  [filter]="gridState.filter"
+  [pageable]="true" [sortable]="true"
+  (dataStateChange)="onStateChange($event)">
+  <ng-template kendoGridToolbarTemplate>
+    <div class="row d-flex mx-3 justify-content-between">
+      <div kendoTooltip position="right">
+        <button kendoGridAddCommand title="Novo Cadastro">Novo </button>
+      </div>
+      <a kendoTooltip position="left"
+        tooltipWidth="400"
+        [title]="getHelp('ClienteContato','Tela')?.helpTexto"
+        class="nav-link"><i
+          class="icon-info"></i></a>
+    </div>
+  </ng-template>
+  <kendo-grid-column field="TipoContatoId" title="Tipo Contato"
+    width="250">
+    <ng-template kendoGridHeaderTemplate let-column
+      let-columnIndex="columnIndex">
+      <span kendoTooltip [title]="getHelp(column.field,'Atributo')?.helpTexto">{{column.title}}</span>
+    </ng-template>
+    <ng-template kendoGridCellTemplate let-dataItem>
+      {{ getName(dataItem)}}
+    </ng-template>
+    <ng-template
+      kendoGridEditTemplate
+      let-dataItem="dataItem"
+      let-formGroup="formGroup">
+      <div class="row d-flex justify-content-center">
+        <div>
+          <kendo-dropdownlist
+            #ddl="popupAnchor"
+            popupAnchor
+            [data]="dataTipoContato"
+            style="width:180px;"
+            [filterable]="true"
+            (filterChange)="handleVariacaoFilter($event)"
+            textField="TipoContatoDescricao"
+            valueField="TipoContatoId"
+            [valuePrimitive]="true"
+            [defaultItem]="{
+              TipoContatoId: null,
+              TipoContatoDescricao: 'Selecione...'
+            }"
+            [formControl]="formGroup.get('TipoContatoId')">
+          </kendo-dropdownlist>
+          <kendo-popup
+            [anchor]="ddl.element"
+            *ngIf="formGroup.get('TipoContatoId').invalid &&
+            !(isNew && formGroup.get('TipoContatoId').untouched)"
+            popupClass="k-widget
+            k-tooltip k-tooltip-validation k-invalid-msg">
+            <span class="k-icon k-i-warning"></span>
+            Escolha o tipo de contato
+          </kendo-popup>
+        </div>
+        <div class="mt-1">
+          <button kendoButton (click)='opem()' [icon]="'add'" [look]="'flat'"></button>
+        </div>
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-column field="ClienteContatoNome" title="Nome"
+    width="150">
+    <ng-template kendoGridHeaderTemplate let-column
+      let-columnIndex="columnIndex">
+      <span kendoTooltip [title]="getHelp(column.field,'Atributo')?.helpTexto">{{column.title}}</span>
+    </ng-template>
+  </kendo-grid-column>
+  <kendo-grid-column field="ClienteContatoCelular" title="Celular"
+    width="120">
+    <ng-template kendoGridHeaderTemplate let-column
+      let-columnIndex="columnIndex">
+      <span kendoTooltip [title]="getHelp(column.field,'Atributo')?.helpTexto">{{column.title}}</span>
+    </ng-template>
+    <ng-template
+      kendoGridEditTemplate
+      let-dataItem="dataItem">
+      <input kendoTextBox
+        [formControl]="formGroup.get('ClienteContatoCelular')"
+        />
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-column field="ClienteContatoEmail" title="Email"
+  width="150">
+  <ng-template kendoGridHeaderTemplate let-column
+    let-columnIndex="columnIndex">
+    <span kendoTooltip [title]="getHelp(column.field,'Atributo')?.helpTexto">{{column.title}}</span>
+  </ng-template>
+</kendo-grid-column>
+  <!-- <kendo-grid-column field="ClienteContatoSequencia" title="Sequencia"
+  width="100">
+  <ng-template kendoGridHeaderTemplate let-column
+    let-columnIndex="columnIndex">
+    <span kendoTooltip [title]="getHelp(column.field,'Atributo')?.helpTexto">{{column.title}}</span>
+  </ng-template>
+</kendo-grid-column> -->
+  <kendo-grid-command-column title="Opções" >
+    <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+      <button kendoGridEditCommand [primary]="true">Editar</button>
+      <button kendoGridRemoveCommand>Apagar</button>
+      <button kendoGridSaveCommand [disabled]="formGroup?.invalid">{{ isNew ?
+        'Adicionar' : 'Atualizar' }}</button>
+      <button kendoGridCancelCommand>{{ isNew ? 'Cancelar' : 'Cancelar' }}</button>
+      <i kendoTooltip *ngIf="!isNew" class="icon-user ml-2" title="Usuário:
+        {{dataItem.ClienteRepresentanteUsuario}} Data:
+        {{dataItem.ClienteRepresentanteData |
+        date:'short'}}"></i>
+    </ng-template>
+  </kendo-grid-command-column>
+</kendo-grid>
+
+
+<kendo-window top="60" title="Cadastro de Tipo de Contato" *ngIf="openedCadTipoContato"
+  (close)="close()" [minWidth]="300" [width]="600" [height]="500">
+  <incca-tipo-contato-grid (updateGrid)="updateGrid($event)"></incca-tipo-contato-grid>
+</kendo-window>

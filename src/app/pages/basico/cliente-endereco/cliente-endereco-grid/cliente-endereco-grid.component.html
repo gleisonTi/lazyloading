@@ -1,0 +1,79 @@
+<div class="k-overlay" *ngIf="openedCadCliente"></div>
+<kendo-grid
+  [data]="view | async"
+  [height]="450"
+  [loading]="loading"
+  (edit)="editHandler($event)"
+  (cancel)="cancelHandler($event)"
+  (save)="saveHandler($event)"
+  filterable="menu"
+  [resizable]='true'
+  (remove)="removeHandler($event)"
+  (add)="addHandler($event)"
+  [pageSize]="gridState.take" [skip]="gridState.skip" [sort]="gridState.sort"
+  [filter]="gridState.filter"
+  [pageable]="true" [sortable]="true"
+  (dataStateChange)="onStateChange($event)">
+  <kendo-grid-messages noRecords="Nenhum registro encontrado."
+    filterFilterButton="Filtrar"
+    filterClearButton="Limpar" filterContainsOperator="Contém">
+  </kendo-grid-messages>
+  <ng-template kendoGridToolbarTemplate>
+    <div class="row d-flex mx-3 justify-content-between">
+      <div kendoTooltip position="right">
+        <button kendoButton (click)="opem({isNew:true})" title="Novo Endereço">Novo
+        </button>
+      </div>
+      <a kendoTooltip position="left"
+        tooltipWidth="400"
+        [title]="getHelp('ClienteEndereco','Tela')?.helpTexto" class="nav-link"><i
+          class="icon-info"></i></a>
+    </div>
+  </ng-template>
+  <div *ngFor="let col of columns">
+    <kendo-grid-column [field]="col.field" [title]="col.title"
+      filterable='true'>
+      <ng-template kendoGridHeaderTemplate let-column
+        let-columnIndex="columnIndex">
+        <span kendoTooltip [title]="getHelp(col.field,'Atributo')?.helpTexto">{{column.title}}</span>
+      </ng-template>
+      <ng-template kendoGridFilterMenuTemplate let-filter let-column="column"
+        let-filterService="filterService">
+        <div>
+          <incca-input-filter
+            [filter]="filter"
+            [valueField]="col.field">
+          </incca-input-filter>
+        </div>
+      </ng-template>
+
+      <ng-template  kendoGridCellTemplate let-dataItem *ngIf="col.field === 'ClienteEnderecoTipo'" >
+        <div *ngIf="dataItem.ClienteEnderecoTipo === 'END'">Principal</div>
+        <div *ngIf="dataItem.ClienteEnderecoTipo === 'ENDC'">Cobrança</div>
+        <div *ngIf="dataItem.ClienteEnderecoTipo === 'ENDE'">Entrega</div>
+       </ng-template>
+
+    </kendo-grid-column>
+  </div>
+  <kendo-grid-command-column title="Opções" width="220">
+    <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+      <button kendoButton (click)="opem({isNew:isNew,dataItem:dataItem})"
+        [primary]="true">Editar</button>
+      <button kendoGridRemoveCommand>Apagar</button>
+      <button kendoGridSaveCommand [disabled]="formGroup?.invalid">{{ isNew ?
+        'Adicionar' : 'Atualizar' }}</button>
+      <button kendoGridCancelCommand>{{ isNew ? 'Cancelar' : 'Cancelar' }}</button>
+      <i kendoTooltip *ngIf="!isNew" class="icon-user ml-2" title="Usuário:
+        {{dataItem.ClienteEnderecoAlteracaoUsuario}} Data:
+        {{dataItem.ClienteEnderecoAlteracaoData | date:'shortDate'}}"></i>
+    </ng-template>
+  </kendo-grid-command-column>
+</kendo-grid>
+
+<kendo-window top="60" left="170"   title="Cadastro de Endereço" *ngIf="openedCadCliente"
+  (close)="close()" [minWidth]="300" [width]="900" [height]="600">
+  <incca-cliente-endereco-form (closeWindow)="closeWindow($event)" (updateGrid)="updateGrid($event)" [isNew]="isNew"
+  [formGroup]="createFormGroup" [tipoCliente]="tipoCliente" [isNewCliente]="isNewCliente">
+  </incca-cliente-endereco-form>
+</kendo-window>
+

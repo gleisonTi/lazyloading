@@ -1,0 +1,91 @@
+<div class="app-body">
+    <main class="main d-flex align-items-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <div class="card-group">
+                        <div class="card p-4">
+                            <div class="card-body">
+                                <form [formGroup]="registrarForm" (ngSubmit)="onSubmit()">
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h1>Registrar</h1>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <img class="logoIncca" src="../../../../assets/img/empresa/Logo50x90.png" alt="Incca Sistemas">
+                                        </div>
+                                    </div>
+                                    <p class="text-muted">Preencha os dados da sua empresa</p>
+                                    
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <input placeholder="Razão Social" type="text" formControlName="EmpresaRazaoSocial" [ngClass]="{ 'is-invalid': submitted && f.EmpresaRazaoSocial.errors }" class="form-control" />
+                                        </div>  
+                                        
+                                        <div class="col-md-6">
+                                            <input placeholder="Nome Fantasia" type="text" formControlName="EmpresaNomeFantasia" [ngClass]="{ 'is-invalid': submitted && f.EmpresaNomeFantasia.errors }" class="form-control" />
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <input placeholder="CNPJ" type="text" formControlName="EmpresaCNPJ" mask="00.000.000/0000-00" [ngClass]="{ 'is-invalid': submitted && f.EmpresaCNPJ.errors }" class="form-control" />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input placeholder="Inscrição Estadual" type="text" formControlName="EmpresaInscricao" class="form-control" />
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <input placeholder="Telefone" type="text" formControlName="EmpresaTelefone" mask="(00)0000-0000" [ngClass]="{ 'is-invalid': submitted && f.EmpresaTelefone.errors }" class="form-control" />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input placeholder="E-mail" type="text" formControlName="EmpresaEmail" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.EmpresaEmail.errors }" />
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <input placeholder="CEP" (keyup)="procuraCep($event)" type="text" formControlName="EmpresaCEP" mask="00000-000" [ngClass]="{ 'is-invalid': submitted && f.EmpresaTelefone.errors }" class="form-control" />
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input placeholder="Endereço" type="text" formControlName="EmpresaEndereco" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.EmpresaEndereco.errors }" />
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-4">
+                                            <input placeholder="Cidade" type="text" formControlName="EmpresaCidade" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.EmpresaCidade.errors }" />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input placeholder="Estado" type="text" formControlName="EmpresaEstado" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.EmpresaEstado.errors }" />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input placeholder="Bairro" type="text" formControlName="EmpresaBairro" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.EmpresaBairro.errors }" />
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <button type="submit" [disabled]="loading"
+                                                class="btn btn-primary px-4">Registrar</button>
+                                        </div>
+                                        <div class="col-auto">
+                                            <button type="button" [routerLink]="['/login']" [disabled]="loading"
+                                                class="btn btn-secondary px-4">Voltar</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div *ngIf="loading === true" class="k-i-loading"></div>

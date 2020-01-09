@@ -1,0 +1,400 @@
+<div class="bg-white text-dark">
+  <div class="row d-flex justify-content-between mx-3">
+    <div>
+      <div *ngIf="produtoId === ''; else title">
+        <p class="text-muted mt-3">
+          *Necessário Cadastro Geral e Fiscal do produto para liberar os
+          cadastros adicionais
+        </p>
+      </div>
+      <ng-template #title>
+        <h5 class="mt-3">{{formGroup.value.ProdutoDescricao}}</h5>
+      </ng-template>
+    </div>
+    <div class="row d-flex justify-content-end">
+      <div class="d-flex flex-row">
+        <div class="d-flex w-100 h-100 mx-2 justify-content-center
+          align-items-center" *ngIf="loading else saveResponse">
+          <div class="k-i-loading mr-2" style="font-size: 30px;color:
+            #8a8989;">
+          </div>
+        </div>
+        <ng-template #saveResponse>
+          <div *ngIf="created">
+            <h5 class="text-success mt-2 mx-3">Produto salvo com sucesso</h5>
+          </div>
+        </ng-template>
+        <div class='m-2'>
+          <button kendoButton (click)="salvarDados()"
+            [disabled]="formGroup.invalid" [primary]="true">Salvar</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <kendo-tabstrip tabPosition="left">
+    <kendo-tabstrip-tab [title]="'Geral'" [selected]="true">
+      <ng-template kendoTabContent>
+        <div class=' w-100'>
+          <div class="d-flex justify-content-center my-2">
+            <h5>Cadastro Geral do produto</h5>
+          </div>
+          <div class="d-flex justify-content-center mx-3">
+            <div *ngIf="formGroup.invalid" class="error-msg">
+              <div *ngIf="formGroup.invalid" class="text-danger"><small>*Os
+                  Campos em destaque são obrigatórios</small></div>
+            </div>
+          </div>
+          <form [formGroup]="formGroup">
+            <div class="d-flex flex-row">
+              <div class="d-flex flex-column">
+                <kendo-textbox-container floatingLabel="Produto
+                  Codigo">
+                  <input kendoTextBox kendoTooltip
+                    formControlName="ProdutoCodigo"
+                    [ngClass]="{'k-state-invalid':
+                    formGroup.controls['ProdutoCodigo'].pristine &&
+                    formGroup.controls['ProdutoCodigo'].errors ||
+                    hasProdutoCod
+                    }"
+                    style="width: 260px"
+                    (focusout)="focusOutFunction($event.target.value)"
+                    [title]=""
+                    />
+                  <div [hidden]="!hasProdutoCod" class="text-danger"><small>Código
+                      já utilizado </small></div>
+                </kendo-textbox-container>
+              </div>
+              <div class="d-flex flex-column mx-2">
+                <kendo-textbox-container floatingLabel="Descrição do
+                  Produto">
+                  <input kendoTextBox kendoTooltip
+                    style="width: 260px"
+                    [ngClass]="{'k-state-invalid':
+                    formGroup.controls['ProdutoDescricao'].pristine &&
+                    formGroup.controls['ProdutoDescricao'].errors}"
+                    formControlName="ProdutoDescricao" [title]="" />
+                </kendo-textbox-container>
+              </div>
+              <div class="d-flex flex-column">
+                <small>Grupo: </small>
+                <kendo-dropdownlist
+                  formControlName="GrupoId"
+                  [defaultItem]="{ GrupoDescricao: 'Selecione o Grupo', GrupoId:
+                  null }"
+                  [valuePrimitive]="true"
+                  style="width:260px;"
+                  [data]="grupoList"
+                  [filterable]="true"
+                  [ngClass]="{'k-state-invalid':
+                  formGroup.controls['GrupoId'].pristine &&
+                  formGroup.controls['GrupoId'].errors }"
+                  [loading]="loading"
+                  [textField]="'GrupoDescricao'"
+                  [valueField]="'GrupoId'"
+                  (filterChange)="handleFilterGrupo($event)"
+                  (valueChange)="valueChangeGrupo($event)"
+                  kendoTooltip [title]="">
+                </kendo-dropdownlist>
+              </div>
+            </div>
+            <div class="d-flex flex-row w-100 mt-2">
+              <!-- <div class="d-flex flex-column mx-1" [hidden]="!possuiReferencia">
+                <small>Referência: </small>
+                <kendo-dropdownlist
+                  formControlName="ProdutoReferenciaId"
+                  [valuePrimitive]="true"
+                  [defaultItem]="{ ReferenciaDescricaoCompleta: 'Selecione a
+                  Referência', ReferenciaId: null }"
+                  [data]="referenciaList"
+                  [filterable]="true"
+                  [loading]="loading"
+                  style="width:260px;"
+                  [textField]="'ReferenciaDescricaoCompleta'"
+                  [valueField]="'ReferenciaId'"
+                  (filterChange)="handleFilterReferencia($event)"
+                  [valuePrimitive]="true"
+                  kendoTooltip [title]="">
+                </kendo-dropdownlist>
+              </div> -->
+              <div class="d-flex flex-column">
+                <small>Unidade: </small>
+                <kendo-dropdownlist
+                  [ngClass]="{'k-state-invalid':
+                  formGroup.controls['UnidadeId'].pristine &&
+                  formGroup.controls['UnidadeId'].errors }"
+                  [valuePrimitive]="true"
+                  formControlName="UnidadeId"
+                  [loading]="loading"
+                  [data]="unidadeList"
+                  style="width:260px;"
+                  [filterable]="true"
+                  [textField]="'UnidadeDescricao'"
+                  [valueField]="'UnidadeId'"
+                  (filterChange)="handleFilterUnidade($event)"
+                  kendoTooltip [title]="">
+                </kendo-dropdownlist>
+              </div>
+              <div class="d-flex flex-column mx-2">
+                <small>Fabricante: </small>
+                <kendo-dropdownlist
+                  formControlName="ProdutoFabricanteId"
+                  [valuePrimitive]="true" s
+                  [data]="fabricanteList"
+                  style="width:260px;"
+                  [loading]="loading"
+                  [filterable]="true"
+                  [ngClass]="{'k-state-invalid':
+                  formGroup.controls['ProdutoFabricanteId'].pristine &&
+                  formGroup.controls['ProdutoFabricanteId'].errors }"
+                  [textField]="'FabricanteDescricao'"
+                  [valueField]="'FabricanteId'"
+                  [value]="formGroup.get('ProdutoFabricanteId').value"
+                  (filterChange)="handleFilterFabricante($event)"
+                  kendoTooltip [title]="">
+                </kendo-dropdownlist>
+              </div>
+              <div class="d-flex flex-column">
+                <small>Embalagem: </small>
+                <kendo-dropdownlist
+                  formControlName="ProdutoEmbalagemId"
+                  [defaultItem]="{ EmbalagemDescricao: 'Selecione a Embalagem',
+                  EmbalagemId: null }"
+                  [valuePrimitive]="true"
+                  [data]="embalagemList"
+                  style="width:260px;"
+                  [filterable]="true"
+                  [ngClass]="{'k-state-invalid':
+                  formGroup.controls['ProdutoEmbalagemId'].pristine &&
+                  formGroup.controls['ProdutoEmbalagemId'].errors }"
+                  [loading]="loading"
+                  [valuePrimitive]="true"
+                  [textField]="'EmbalagemDescricao'"
+                  [valueField]="'EmbalagemId'"
+                  (filterChange)="handleFilterEmbalagem($event)"
+                  kendoTooltip [title]="">
+                </kendo-dropdownlist>
+              </div>
+            </div>
+            <div class="d-flex flex-row flex-wrap mt-2">
+              <div *ngFor="let atributo of atributos; index as i;">
+                <div class="d-flex flex-column mr-2"
+                  *ngIf="!atributo.AtributoDropValues; else dropListAtributo">
+                  <kendo-textbox-container
+                    floatingLabel="{{atributo.AtributoDescricao}}">
+                    <input kendoTextBox kendoTooltip
+                      style="width: 260px"
+                      [formControlName]="'Atributo'+i"
+                      [ngClass]="{'k-state-invalid':
+                      formGroup.controls['Atributo'+i].pristine &&
+                      formGroup.controls['Atributo'+i].errors }"
+                      [title]="" />
+                  </kendo-textbox-container>
+                </div>
+                <ng-template #dropListAtributo>
+                  <div class="d-flex flex-column mr-2">
+                    <small>{{atributo.AtributoDescricao}}:</small>
+                    <!-- <small>{{atributo.AtributoDropValues | json}}</small> -->
+                    <kendo-dropdownlist
+                      [valuePrimitive]="true"
+                      style="width:260px;"
+                      [data]="atributo.AtributoDropValues"
+                      [loading]="loading"
+                      [value]="atributo.AtributoDropValues[0].AtributoDescricao"
+                      [textField]="'AtributoDescricao'"
+                      [formControlName]="'Atributo'+i"
+                      [ngClass]="{'k-state-invalid':
+                      formGroup.controls['Atributo'+i].pristine &&
+                      formGroup.controls['Atributo'+i].errors }"
+                      [valueField]="'AtributoDescricao'"
+                      kendoTooltip [title]="">
+                    </kendo-dropdownlist>
+                  </div>
+                </ng-template>
+              </div>
+
+              <!-- <button kendoButton (click)="showForm()"> Ver form</button> -->
+            </div>
+            <div class="d-flex flex-row w-100 mt-2">
+
+              <div class="">
+                <div class="">
+                  <kendo-textbox-container class="w-75" floatingLabel="Descrição
+                    complementar">
+                    <textarea cols="50" kendoTextArea kendoTooltip
+                      formControlName="ProdutoDescricaoComplementar" [title]=""></textarea>
+                  </kendo-textbox-container>
+                </div>
+              </div>
+              <div class="d-flex flex-row mt-2 mx-2 w-25">
+                <div class="d-flex flex-column">
+                  <div class="d-flex flex-column">
+                    <small class="mb-2">Gerou Cnp</small>
+                    <div>
+                      <kendo-switch formControlName="ProdutoGerouCnp"></kendo-switch>
+                    </div>
+                  </div>
+                  <div class="d-flex mt-1 flex-column">
+                    <small class="mb-2">Produto é Kit</small>
+                    <div>
+                      <kendo-switch formControlName="ProdutoKit"></kendo-switch>
+                    </div>
+                  </div>
+                </div>
+                <div class="d-flex mx-4 flex-column">
+                  <div class="d-flex flex-column">
+                    <small class="mb-2">Inativo</small>
+                    <div>
+                      <kendo-switch formControlName="ProdutoInativo"></kendo-switch>
+                    </div>
+                  </div>
+                  <div class="d-flex mt-1 flex-column">
+                    <small class="mb-2">Possui Consumo</small>
+                    <div>
+                      <kendo-switch formControlName="ProdutoPossuiConsumo"></kendo-switch>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </form>
+        </div>
+      </ng-template>
+    </kendo-tabstrip-tab>
+
+    <kendo-tabstrip-tab [title]="'Fiscal'">
+      <ng-template kendoTabContent>
+        <div>
+          <div class="d-flex justify-content-center my-2">
+            <h5>Cadastro fiscal do produto</h5>
+          </div>
+          <div class="d-flex justify-content-center mx-3">
+            <div *ngIf="formGroup.invalid" class="error-msg">
+              <div *ngIf="formGroup.touched" class="text-danger"><small>*Formulario
+                  com campos obrigatórios</small></div>
+            </div>
+          </div>
+          <form [formGroup]="formGroup" class="form-group">
+            <kendo-textbox-container class='m-2' floatingLabel="Peso bruto
+              (KG)">
+              <input kendoTextBox kendoTooltip suffix="KG"
+                mask="dot_separator.2"
+                formControlName="ProdutoFisPesoBruto"
+                [title]="" />
+            </kendo-textbox-container>
+            <kendo-textbox-container class='m-2' floatingLabel="Peso líquido
+              (KG)">
+              <input kendoTextBox kendoTooltip suffix="KG"
+                mask="dot_separator.2"
+                formControlName="ProdutoFisPesoLiquido" [title]="" />
+            </kendo-textbox-container>
+            <kendo-textbox-container class='m-2' floatingLabel="Número de NCM">
+              <input kendoTextBox kendoTooltip
+                [ngClass]="{'k-state-invalid':
+                formGroup.controls['ProdutoFisNcm'].pristine &&
+                formGroup.controls['ProdutoFisNcm'].errors}"
+                formControlName="ProdutoFisNcm" maxlength="8" [title]="" />
+              <div *ngIf="formGroup.controls['ProdutoFisNcm'].errors &&
+                formGroup.controls['ProdutoFisNcm'].pristine" class="error-msg">
+                <div
+                  [hidden]="!formGroup.controls['ProdutoFisNcm'].errors"
+                  class="text-danger"><small>Campo deve Conter 8 digitos</small></div>
+              </div>
+            </kendo-textbox-container>
+            <kendo-textbox-container class='m-2' floatingLabel="Número FCI">
+              <input kendoTextBox kendoTooltip
+                formControlName="ProdutoFisFci" [title]="" />
+              <div *ngIf="formGroup.controls['ProdutoFisFci'].errors &&
+                formGroup.controls['ProdutoFisFci'].touched" class="error-msg">
+                <div [hidden]="!formGroup.controls['ProdutoFisFci'].errors"
+                  class="text-danger"><small>Somente Números</small></div>
+              </div>
+            </kendo-textbox-container>
+            <kendo-textbox-container class='m-2' floatingLabel="% Conteúdo
+              Importado">
+              <kendo-maskedtextbox kendoTooltip
+                formControlName="ProdutoFisPercentualConteudoImportado"
+                [title]=""></kendo-maskedtextbox>
+            </kendo-textbox-container>
+            <kendo-dropdownlist
+              formControlName="ProdutoFisTipoProduto"
+              style="width:300px;"
+              [defaultItem]="{ descricao: 'Selecione o SPED', value: null }"
+              [valuePrimitive]="true"
+              class='m-2'
+              [data]="spedList"
+              [loading]="loading"
+              [valuePrimitive]="true"
+              [textField]="'descricao'"
+              [valueField]="'value'"
+              kendoTooltip [title]="">
+            </kendo-dropdownlist>
+          </form>
+        </div>
+      </ng-template>
+    </kendo-tabstrip-tab>
+
+    <kendo-tabstrip-tab [title]="'Consumo'" [disabled]="produtoId === '' ||
+      formGroup.get('ProdutoPossuiConsumo').value === false ? true
+      : false">
+      <ng-template kendoTabContent>
+        <div class="d-flex justify-content-center my-2">
+          <h5>Cadastro de consumo do produto</h5>
+        </div>
+        <incca-produto-consumo-grid [produtoId]='produtoId'></incca-produto-consumo-grid>
+      </ng-template>
+    </kendo-tabstrip-tab>
+
+    <kendo-tabstrip-tab [title]="'SKU'" [disabled]="produtoId === '' ? true :
+      false">
+      <ng-template kendoTabContent>
+        <div class="d-flex justify-content-center my-2">
+          <h5>Cadastro de SKU do produto</h5>
+        </div>
+        <incca-produto-sku-grid [produtoId]='produtoId' [gradeId]='gradeId'></incca-produto-sku-grid>
+      </ng-template>
+    </kendo-tabstrip-tab>
+
+    <kendo-tabstrip-tab [title]="'Estoque'" [disabled]="produtoId === '' ? true
+      : false">
+      <ng-template kendoTabContent>
+        <div class="d-flex justify-content-center my-2">
+          <h5>Cadastro de estoque do produto</h5>
+        </div>
+        <incca-produto-estoque-grid [gradeId]='gradeId' [produtoId]='produtoId'></incca-produto-estoque-grid>
+      </ng-template>
+    </kendo-tabstrip-tab>
+
+    <kendo-tabstrip-tab [title]="'Imagens'" [disabled]="produtoId === '' ? true
+      :
+      false">
+      <ng-template kendoTabContent>
+        <div class="d-flex justify-content-center my-2">
+          <h5>Cadastro de imagens do produto</h5>
+        </div>
+        <incca-produto-imagem-grid [produtoId]='produtoId'></incca-produto-imagem-grid>
+      </ng-template>
+    </kendo-tabstrip-tab>
+    <!--
+    <kendo-tabstrip-tab [title]="'Composição'" [disabled]="produtoId === '' ?
+      true : false">
+      <ng-template kendoTabContent>
+        <div class="d-flex justify-content-center my-2">
+          <h5>Cadastro de composição do produto</h5>
+        </div>
+        <incca-produto-composicao-grid [produtoId]='produtoId'></incca-produto-composicao-grid>
+      </ng-template>
+    </kendo-tabstrip-tab> -->
+    <kendo-tabstrip-tab [title]="'Categorias'" [disabled]="produtoId === '' ?
+      true : false">
+      <ng-template kendoTabContent>
+        <div class="d-flex justify-content-center my-2">
+          <h5>Cadastro de categoria do produto</h5>
+        </div>
+        <incca-produto-categoria-grid [produtoId]='produtoId'></incca-produto-categoria-grid>
+      </ng-template>
+    </kendo-tabstrip-tab>
+  </kendo-tabstrip>
+
+</div>

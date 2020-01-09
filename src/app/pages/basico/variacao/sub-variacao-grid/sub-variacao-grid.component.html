@@ -1,0 +1,291 @@
+ <kendo-grid
+  [data]="view | async"
+  [loading]="loading"
+  filterable="menu"
+  [filter]="gridState.filter"
+  (edit)="editHandler($event)"
+  (cancel)="cancelHandler($event)"
+  (save)="saveHandler($event)"
+  (remove)="removeHandler($event)"
+  (add)="addHandler($event)"
+  [pageSize]="gridState.take" [skip]="gridState.skip" [sort]="gridState.sort"
+  [filter]="gridState.filter"
+  [pageable]="true" [sortable]="true"
+  (dataStateChange)="onStateChange($event)"
+  [height]="500">
+  <ng-template kendoGridToolbarTemplate>
+    <div class="row">
+      <div class="col-md-6 mt-2" kendoTooltip position="right">
+        <div class="row">
+          <div class="col-md-2">
+            <button kendoGridAddCommand title="Nova Variacao">Novo </button>
+          </div>
+          <div class="col-md-10 mt-2 d-inline-flex">
+            <h5 class="">Variações do tipo </h5> <h5 class="ml-2 text-primary">{{DescricaoPai}}</h5>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="d-flex justify-content-end">
+          <div *ngIf="hasFabricacao" class="d-inline-flex">
+            <kendo-dropdownlist
+              class="p-2"
+              [data]="dataFabricante"
+              style='width:300px;'
+              [filterable]="true"
+              (filterChange)="handleFabricanteFilter($event)"
+              (selectionChange)="selectionFabricanteChange($event)"
+              textField="FabricanteDescricao"
+              valueField="FabricanteId"
+              [valuePrimitive]="true"
+              [defaultItem]="{
+              FabricanteId: 0,
+              FabricanteDescricao: 'Escolha um fabricante'
+              }">
+            </kendo-dropdownlist>
+            <div class="mt-2">
+              <button kendoButton [icon]="'add'" [look]="'flat'"
+                (click)="open('fabricante')"></button>
+            </div>
+          </div>
+          <div *ngIf="hasColecao" class="d-inline-flex">
+            <kendo-dropdownlist
+              class="p-2"
+              [data]="dataColecao"
+              style='width:300px;'
+              [filterable]="true"
+              (filterChange)="handleColecaoFilter($event)"
+              (selectionChange)="selectionColecaoChange($event)"
+              textField="ColecaoDescricao"
+              valueField="ColecaoId"
+              [valuePrimitive]="true"
+              [defaultItem]="{
+              ColecaoId: 0,
+              ColecaoDescricao: 'Escolha uma Coleção'
+              }">
+            </kendo-dropdownlist>
+            <div class="mt-2">
+              <button kendoButton [icon]="'add'" [look]="'flat'"
+                (click)="open('colecao')"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <div *ngFor="let col of columns">
+    <kendo-grid-column
+      *ngIf="col.field != 'VariacaoDescricao' && col.field !=
+      'VariacaoOrdemTela' && col.field != 'VariacaoCodigo' && col.field !=
+      'VariacaoValorAcrescimo'" [field]="col.field"
+      [title]="col.title"
+      editor="boolean"
+      [filterable]="false"
+      width="90">
+      <ng-template kendoGridHeaderTemplate let-column
+        let-columnIndex="columnIndex">
+        <span kendoTooltip [title]="getHelp(col.field,'Atributo')?.helpTexto">{{col.title}}</span>
+      </ng-template>
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <label class="k-form-field right">
+          <input
+            type="checkbox"
+            id="checkOnClick"
+            currencyMask
+            [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }"
+            class="k-checkbox"
+            [checked]="dataItem.VariacaoInativo"
+            />
+          <label class="k-checkbox-label"></label>
+        </label>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      *ngIf="col.field === 'VariacaoDescricao' || col.field ===
+      'VariacaoOrdemTela' || col.field === 'VariacaoCodigo' || col.field ===
+      'VariacaoValorAcrescimo'"
+      [field]="col.field"
+      [title]="col.title"
+      width="150"
+      [filterable]="col.field === 'VariacaoCodigo' || col.field ! ===
+      'VariacaoDescricao' ? true : false"
+      editor="text">
+      <ng-template kendoGridHeaderTemplate let-column
+        let-columnIndex="columnIndex">
+        <span kendoTooltip [title]="getHelp(col.field,'Atributo')?.helpTexto">{{col.title}}</span>
+      </ng-template>
+      <ng-template kendoGridCellTemplate let-dataItem *ngIf="col.field ===
+        'VariacaoValorAcrescimo'">
+        {{ parseFloat(dataItem.VariacaoValorAcrescimo) | currency: 'BRL'}}
+      </ng-template>
+
+
+      <ng-template kendoGridFilterMenuTemplate let-filter let-column="column"
+        let-filterService="filterService">
+        <incca-input-filter
+          [filter]="filter"
+          [valueField]="col.field">
+        </incca-input-filter>
+      </ng-template>
+
+      <ng-template
+        kendoGridEditTemplate
+        let-column="col"
+        let-formGroup="formGroup"
+        let-isNew="isNew"
+        let-dataItem="dataItem">
+        <input
+          *ngIf="col.field !== 'VariacaoValorAcrescimo'"
+          #input
+          kendoTextBox
+          [formControl]="formGroup.get(col.field)"
+          />
+        <input
+          #input
+          *ngIf="col.field === 'VariacaoValorAcrescimo'"
+          kendoTextBox
+          currencyMask
+          [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }"
+          [formControl]="formGroup.get(col.field)"
+          />
+        <kendo-popup
+          [anchor]="input"
+          *ngIf="formGroup.get(col.field).invalid &&
+          !(isNew && formGroup.get(col.field).untouched)" popupClass="k-widget
+          k-tooltip k-tooltip-validation k-invalid-msg">
+          <span class="k-icon k-i-warning"></span>
+          Necessário o nome da {{col.title}}
+        </kendo-popup>
+      </ng-template>
+    </kendo-grid-column>
+  </div>
+  <kendo-grid-column field="FabricanteId" title="Fabricante" width="150"
+    [filterable]="false">
+    <ng-template kendoGridHeaderTemplate let-column
+      let-columnIndex="columnIndex">
+      <span kendoTooltip
+        [title]="getHelp('FabricanteId','Atributo')?.helpTexto">{{column.title}}</span>
+    </ng-template>
+    <ng-template kendoGridCellTemplate let-dataItem>
+      <div *ngIf="dataItem.FabricanteId !==
+        '00000000-0000-0000-0000-000000000000'">
+        {{ FabrincanteName(dataItem.FabricanteId)?.FabricanteDescricao }}
+      </div>
+      <div *ngIf="dataItem.FabricanteId ===
+        '00000000-0000-0000-0000-000000000000'">
+        Sem Fabricante
+      </div>
+    </ng-template>
+    <ng-template
+      kendoGridEditTemplate
+      let-dataItem="dataItem"
+      let-formGroup="formGroup">
+      <div class="row d-flex justify-content-center">
+        <div>
+          <kendo-dropdownlist
+            [data]="dataFabricante"
+            style='width:160px;'
+            [filterable]="true"
+            (filterChange)="handleFabricanteFilter($event)"
+            (selectionChange)="selectionFabricanteChange($event)"
+            textField="FabricanteDescricao"
+            valueField="FabricanteId"
+            [valuePrimitive]="true"
+            [defaultItem]="{
+            FabricanteId: null,
+            FabricanteDescricao: 'Escolha um Fabricante'
+            }"
+            [formControl]="formGroup.get('FabricanteId')">
+          </kendo-dropdownlist>
+        </div>
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-column field="ColecaoId" title="Coleção" width="150"
+    [filterable]="false">
+    <ng-template kendoGridHeaderTemplate let-column
+      let-columnIndex="columnIndex">
+      <span kendoTooltip [title]="getHelp('ColecaoId','Atributo')?.helpTexto">{{column.title}}</span>
+    </ng-template>
+    <ng-template kendoGridCellTemplate let-dataItem>
+      <div *ngIf="dataItem.ColecaoId !==
+        '00000000-0000-0000-0000-000000000000'">
+        {{ ColecaoName(dataItem.ColecaoId)?.ColecaoDescricao }}
+      </div>
+      <div *ngIf="dataItem.ColecaoId ===
+        '00000000-0000-0000-0000-000000000000'">
+        Sem Coleção
+      </div>
+    </ng-template>
+    <ng-template
+      kendoGridEditTemplate
+      let-dataItem="dataItem"
+      let-formGroup="formGroup">
+      <div class="row d-flex justify-content-center">
+        <div>
+          <kendo-dropdownlist
+            [data]="dataColecao"
+            style='width:150px;'
+            [filterable]="true"
+            (filterChange)="handleColecaoFilter($event)"
+            (selectionChange)="selectionColecaoChange($event)"
+            textField="ColecaoDescricao"
+            valueField="ColecaoId"
+            [valuePrimitive]="true"
+            [defaultItem]="{
+            ColecaoId: null,
+            ColecaoDescricao: 'Escolha uma Coleção'
+            }"
+            [formControl]="formGroup.get('ColecaoId')">
+          </kendo-dropdownlist>
+        </div>
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+
+
+  <div *kendoGridDetailTemplate="let dataItem">
+    <div *ngIf="hasConsumo">
+      <incca-variacao-consumo-grid [dataItemVariacao]="dataItem">
+      </incca-variacao-consumo-grid>
+    </div>
+    <div *ngIf="hasConsumo === false">
+      <h5>Variação sem Consumo</h5>
+    </div>
+  </div>
+  <kendo-grid-command-column title="Opções" width="270">
+    <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+      <button kendoGridEditCommand [primary]="true">Editar</button>
+      <button kendoGridRemoveCommand>Remover</button>
+      <button kendoGridSaveCommand [disabled]="formGroup?.invalid">
+        {{ isNew ? "Adicionar" : "Atualizar" }}
+      </button>
+      <button kendoGridCancelCommand>
+        {{ isNew ? "Descartar" : "Cancelar" }}
+      </button>
+      <button *ngIf="!isNew" kendoButton [icon]="'image'" kendoTooltip
+        title="Adicionar Imagem"
+        (click)="open('imagem', dataItem)"></button>
+
+      <i kendoTooltip *ngIf="!isNew" class="icon-user ml-2" title="Usuário:
+        {{dataItem.VariacaoUsuario}} Data: {{dataItem.VariacaoData |
+        date:'short'}}"></i>
+    </ng-template>
+  </kendo-grid-command-column>
+</kendo-grid>
+
+<kendo-window top="60" title="Cadastro de Fabricante" *ngIf="openedFabicante"
+  (close)="close('fabricante')" [minWidth]="300" [width]="600" [height]="400">
+  <incca-fabricante-grid></incca-fabricante-grid>
+</kendo-window>
+
+<kendo-window top="60" title="Cadastro de Coleção" *ngIf="openedColecao"
+  (close)="close('colecao')" [minWidth]="300" [width]="600" [height]="400">
+  <incca-colecao-grid></incca-colecao-grid>
+</kendo-window>
+
+<kendo-window top="60" title="Cadastro de Imagem" *ngIf="openedImagem"
+  (close)="close('imagem')" [minWidth]="300" [width]="700" [height]="400">
+  <incca-variacao-imagem-grid [variacaoDataItem]="variacaoDataItem"></incca-variacao-imagem-grid>
+</kendo-window>

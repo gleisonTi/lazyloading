@@ -1,0 +1,107 @@
+<kendo-grid
+  [data]="view | async"
+  [height]="400"
+  [loading]="loading"
+  (edit)="editHandler($event)"
+  (cancel)="cancelHandler($event)"
+  (save)="saveHandler($event)"
+  (remove)="removeHandler($event)"
+  (add)="addHandler($event)"
+  [pageSize]="gridState.take" [skip]="gridState.skip" [sort]="gridState.sort"
+  [filter]="gridState.filter"
+  [pageable]="true" [sortable]="true"
+  (dataStateChange)="onStateChange($event)">
+  <ng-template kendoGridToolbarTemplate>
+    <div class="row d-flex mx-3 justify-content-between">
+      <div kendoTooltip position="right">
+        <button kendoGridAddCommand title="Nova Imagem do produto">Nova Imagem
+        </button>
+      </div>
+      <a kendoTooltip position="left"
+        tooltipWidth="400"
+        [title]="getHelp('ProdutoImagem','Tela')?.helpTexto" class="nav-link"><i
+          class="icon-info"></i></a>
+    </div>
+  </ng-template>
+
+  <kendo-grid-column field="ProdutoImagemFoto" title="Imagem">
+    <ng-template kendoGridHeaderTemplate let-column
+      let-columnIndex="columnIndex">
+      <span kendoTooltip [title]="getHelp(column.field,'Atributo')?.helpTexto">{{column.title}}</span>
+    </ng-template>
+
+    <ng-template kendoGridCellTemplate let-dataItem>
+      <div class="d-flex flex-column justify-content-center align-items-center">
+        <div class="m-3">
+          <img class="img-thumbnail"
+            src="{{baseUrl}}{{dataItem.ProdutoImagemFoto}}" height="100"
+            width="100">
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template
+      kendoGridEditTemplate
+      let-dataItem
+      let-formGroup="formGroup"
+      let-isNew="isNew">
+      <form [formGroup]="formGroup">
+        <div class="d-flex justify-content-center align-items-center">
+          <div class="d-flex flex-column justify-content-center
+            align-items-center">
+            <div class="m-3">
+              <img class="img-thumbnail" [src]="dataItem.ProdutoImagemFoto ?
+                baseUrl+dataItem.ProdutoImagemFoto : geturlImagem()"
+                height="100" width="100">
+            </div>
+            <div class="m-3 w-50">
+              <div class="d-flex flex-row justify-content-center
+                align-items-center">
+                <input type="text" class="mx-2" kendoTextBox
+                  formControlName="NomeImagem" aria-describedby="fileHelp">
+                <label class="k-button mt-2" for='selecao-arquivo'>
+                  <span class="k-icon k-i-image-light-dialog"></span>
+                </label>
+                <input id='selecao-arquivo' hidden type="file"
+                  accept="image/jpeg, image/png"
+                  (change)="getImageEvent($event.target.files)">
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </ng-template>
+
+  </kendo-grid-column>
+
+  <kendo-grid-column field="ProdutoImagemOrdem" title="Ordem">
+    <ng-template kendoGridHeaderTemplate let-column
+      let-columnIndex="columnIndex">
+      <span kendoTooltip [title]="getHelp(column.field,'Atributo')?.helpTexto">{{column.title}}</span>
+    </ng-template>
+    <ng-template
+      kendoGridEditTemplate
+      let-column
+      let-formGroup="formGroup"
+      let-isNew="isNew"
+      let-dataItem="dataItem">
+      <!-- {{getAutoNumberImagem()}} -->
+      <p>{{autoNumberImagem | json}}</p>
+    </ng-template>
+
+  </kendo-grid-column>
+
+  <kendo-grid-command-column title="Opções" width="300">
+    <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+      <button kendoGridEditCommand [primary]="true">Editar</button>
+      <button kendoGridRemoveCommand>Apagar</button>
+      <button kendoGridSaveCommand [disabled]="formGroup?.invalid">{{ isNew ?
+        'Adicionar' : 'Atualizar' }}</button>
+      <button kendoGridCancelCommand>{{ isNew ? 'Cancelar' : 'Cancelar' }}</button>
+      <i kendoTooltip *ngIf="!isNew" class="icon-user ml-2" title="Usuário:
+        {{dataItem.ProdutoImagemUsuario}} Data: {{dataItem.ProdutoImagemData |
+        date:'short'}}"></i>
+    </ng-template>
+  </kendo-grid-command-column>
+
+</kendo-grid>

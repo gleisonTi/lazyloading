@@ -1,0 +1,89 @@
+<div class="k-overlay" *ngIf="openedCadSubCategoria"></div>
+<kendo-grid
+  [loading]="loading"
+  [data]="view | async"
+  (remove)="removeHandler($event)"
+  [pageSize]="gridState.take"
+  [skip]="gridState.skip"
+  [sort]="gridState.sort"
+  [pageable]="true"
+  [sortable]="true"
+  (dataStateChange)="onStateChange($event)"
+  filterable="menu"
+  [resizable]="true"
+  [height]="600">
+<kendo-grid-messages noRecords="Nenhum registro encontrado." filterFilterButton= "Filtrar"
+filterClearButton="Limpar" filterContainsOperator="Contém">
+</kendo-grid-messages>
+  <ng-template kendoGridToolbarTemplate>
+    <div class="row d-flex mx-3 justify-content-between">
+        <div kendoTooltip position="right">
+            <button kendoButton (click)="open({isNew:true})" title="Nova Subcategoria">Novo </button>
+        </div>
+    </div>
+  </ng-template>
+  <div *ngFor="let col of columns">
+    <kendo-grid-column
+      *ngIf="col.field != 'CategoriaNome'"
+      [field]="col.field"
+      [title]="col.title" editor="boolean" [filterable]="false"
+      width="90">
+      <ng-template kendoGridHeaderTemplate let-column
+        let-columnIndex="columnIndex">
+        <span kendoTooltip [title]="getHelp(col.field,'Inativo')?.helpTexto">{{column.title}}</span>
+      </ng-template>
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <label class="k-form-field right">
+          <input disabled
+            type="checkbox"
+            id="checkOnClick"
+            class="k-checkbox"
+            />
+          <label class="k-checkbox-label" for="checkChildren"></label>
+        </label>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      *ngIf="col.field === 'CategoriaNome'"
+      [filterable]="true"
+      [field]="col.field"
+      [title]="col.title">
+      <ng-template kendoGridFilterMenuTemplate let-filter let-column="column" let-filterService="filterService">
+          <incca-input-filter
+              [filter]="filter"
+              valueField="CategoriaNome">
+          </incca-input-filter>
+      </ng-template>
+      <ng-template kendoGridHeaderTemplate let-column
+        let-columnIndex="columnIndex">
+        <span kendoTooltip [title]="getHelp(col.field,'CategoriaNome')?.helpTexto">{{col.title}}</span>
+      </ng-template>
+    </kendo-grid-column>
+  </div>
+
+  <kendo-grid-command-column title="Opções" width="220">
+    <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+      <button kendoButton (click)="open({isNew:false,dataItem:dataItem})"
+        [primary]="true">Editar</button>
+      <button kendoGridRemoveCommand>Apagar</button>
+      <button kendoGridSaveCommand [disabled]="formGroup?.invalid">{{ isNew ?
+        'Adicionar' : 'Atualizar' }}</button>
+      <button kendoGridCancelCommand>Cancelar</button>
+      <i kendoTooltip *ngIf="!isNew" class="icon-user ml-2" title="Usuário:
+        {{dataItem.CategoriaUsuario}} Data:
+        {{dataItem.CategoriaData | date:'shortDate'}}"></i>
+    </ng-template>
+</kendo-grid-command-column>
+
+</kendo-grid>
+
+<kendo-window top="30" title="Cadastro de SubCategoria" *ngIf="openedCadSubCategoria"
+  (close)="close()" [minWidth]="300" [width]="1000" [height]="600">
+  <incca-categoria-form
+  [categoriaService]="categoriaService"
+  [isNew]="isNew"
+  [formGroup]="createFormGroup"
+  (updateGrid)="updateGrid($event)"
+  >
+  </incca-categoria-form>
+</kendo-window>

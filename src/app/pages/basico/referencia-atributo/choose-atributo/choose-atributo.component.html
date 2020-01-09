@@ -1,0 +1,58 @@
+<kendo-grid [data]="view | async"
+  [loading]="loading"
+  [selectable]="{
+  checkboxOnly: true,
+  mode: 'multiple'
+  }"
+  (selectionChange)='selectionChange($event)'
+  (cellClick)="cellClickHandler($event)"
+  (cellClose)="cellCloseHandler($event)"
+  (dataStateChange)="onStateChange($event)"
+  [height]="300"
+  [pageSize]="gridState.take" [skip]="gridState.skip" [sort]="gridState.sort"
+  [pageable]="true" [sortable]="true"
+  [height]="300"
+  filterable="menu"
+  [kendoGridSelectBy]="'AtributoId'"
+  [selectedKeys]="atributosSelecionadas">
+  <kendo-grid-messages noRecords="Nenhum atributo encontrado em {{atributoNome}}. Cadastre um atributo para ser selecionado." filterFilterButton="Filtrar"
+    filterClearButton="Limpar" filterContainsOperator="Contém">
+  </kendo-grid-messages>
+  <kendo-grid-checkbox-column title="Escolha os Atributos" width="90"></kendo-grid-checkbox-column>
+  <kendo-grid-column field="AtributoDescricao" title="Atributo" [width]="300">
+    <ng-template kendoGridFilterMenuTemplate let-filter let-column="column"
+      let-filterService="filterService">
+      <incca-input-filter
+        [filter]="filter"
+        valueField="AtributoDescricao">
+      </incca-input-filter>
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-column field="ReferenciaAtributoInativo" title="Inativo"
+    editor="boolean" [filterable]='false'>
+    <ng-template kendoGridHeaderTemplate let-column
+      let-columnIndex="columnIndex">
+      <span kendoTooltip title="Clique na celula para editar">{{column.title}}</span>
+    </ng-template>
+    <ng-template kendoGridCellTemplate let-dataItem>
+      <label class="k-form-field right">
+        <input
+          type="checkbox"
+          id="checkOnClick"
+          class="k-checkbox"
+          [checked]="getcheckValue(dataItem,'Inativo')"
+          />
+        <label class="k-checkbox-label" for="checkChildren"></label>
+      </label>
+    </ng-template>
+    <ng-template kendoGridEditTemplate
+      let-dataItem="dataItem">
+      <input
+        (change)="changeInativo($event,dataItem,'Inativo')"
+        type="checkbox"
+        [checked]="getcheckValue(dataItem,'Inativo')"
+        />
+    </ng-template>
+  </kendo-grid-column>
+</kendo-grid>

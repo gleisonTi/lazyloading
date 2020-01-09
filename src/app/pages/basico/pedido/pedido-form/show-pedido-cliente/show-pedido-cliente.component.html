@@ -1,0 +1,34 @@
+<div class="d-flex flex-row flex-wrap
+align-items-center justify-content-between"
+*ngIf="cliente && clienteEndereco">
+<div class="d-flex flex-column mx-2">
+  <small>Razão Social: </small>
+  <h6>{{cliente.ClienteNome+'
+    '+cliente.ClienteNomeFantasia}}</h6>
+</div>
+<div class="d-flex flex-column mx-2">
+  <small>Telefone: </small>
+  <h6>{{clienteEndereco.ClienteEnderecoTelefone}}</h6>
+</div>
+<div class="d-flex flex-column mx-2">
+  <small>Endereço: </small>
+  <h6>{{clienteEndereco.ClienteEndereco}}</h6>
+</div>
+<div class="d-flex flex-column mx-2">
+  <small>Cidade: </small>
+  <h6>{{clienteEndereco.ClienteEnderecoCidade}}</h6>
+</div>
+<div class="d-flex flex-column mx-2">
+  <small>UF: </small>
+  <h6>{{clienteEndereco.ClienteEnderecoUF}}</h6>
+</div>
+<div class="d-flex flex-column mx-2">
+  <small>CEP: </small>
+  <h6>{{clienteEndereco.ClienteEnderecoCep}}</h6>
+</div>
+<div class="d-flex flex-column mx-2">
+  <small>CPF/CNPJ: </small>
+  <h6>{{clienteEndereco.ClienteEnderecoCPF}}</h6>
+  <h6>{{clienteEndereco.ClienteEnderecoCNPJ}}</h6>
+</div>
+</div>

@@ -1,0 +1,292 @@
+<div class=' w-100'>
+  <form [formGroup]="formGroup">
+    <div class="row ml-1 my-3">
+      <div class="d-flex w-25">
+        <small class="my-1 mx-2">Endereço Padrão</small>
+        <div>
+          <kendo-switch
+            formControlName="ClienteEnderecoPadrao"></kendo-switch>
+        </div>
+      </div>
+      <div class="d-flex w-75">
+        <h5> Cadastro de endereço do cliente</h5>
+      </div>
+    </div>
+    <div class="d-flex justify-content-center mx-3">
+      <div *ngIf="formGroup.invalid" class="error-msg">
+        <div *ngIf="formGroup.pristine" class="text-danger"><small>*Os
+            Campos em destaque são obrigatórios</small></div>
+      </div>
+    </div>
+    <div class="d-flex flex-row">
+      <div class="d-flex flex-column w-25 mx-2 my-2">
+        <small>Tipo de Endereço: </small>
+        <kendo-dropdownlist
+          formControlName="ClienteEnderecoTipo"
+          [defaultItem]="{ descricao: 'Tipo de Endereço', ClienteEnderecoTipo:
+          null }"
+          [valuePrimitive]="true"
+          [data]="tipoEnderecoList"
+          [ngClass]="{'k-state-invalid':
+          formGroup.controls['ClienteEnderecoTipo'].pristine &&
+          formGroup.controls['ClienteEnderecoTipo'].errors }"
+          [valuePrimitive]="true"
+          [textField]="'descricao'"
+          [valueField]="'ClienteEnderecoTipo'"
+          kendoTooltip [title]="">
+        </kendo-dropdownlist>
+      </div>
+      <kendo-textbox-container class='m-2 w-25' floatingLabel="Cep:">
+        <div>
+          <input mask='{{maskCep}}' kendoTooltip
+            (focusout)="focusOutFunction($event.target.value)"
+            class="k-textbox"
+            [ngClass]="{'k-state-invalid':
+            formGroup.controls['ClienteEnderecoCep'].pristine &&
+            formGroup.controls['ClienteEnderecoCep'].errors }"
+            formControlName="ClienteEnderecoCep" [title]="">
+          <div
+            *ngIf="formGroup.controls['ClienteEnderecoCep'].errors
+            &&
+            formGroup.controls['ClienteEnderecoCep'].pristine"
+            class="error-msg">
+            <div
+              [hidden]="!formGroup.controls['ClienteEnderecoCep'].errors"
+              class="text-danger"><small>Campo obrigatório </small></div>
+          </div>
+        </div>
+      </kendo-textbox-container>
+      <kendo-textbox-container class='m-2 w-50' floatingLabel="Endereço:">
+        <input kendoTextBox kendoTooltip
+          [ngClass]="{'k-state-invalid':
+          formGroup.controls['ClienteEndereco'].pristine &&
+          formGroup.controls['ClienteEndereco'].errors }"
+          formControlName="ClienteEndereco" [title]="" />
+        <div
+          *ngIf="formGroup.controls['ClienteEndereco'].errors
+          &&
+          formGroup.controls['ClienteEndereco'].pristine"
+          class="error-msg">
+          <div
+            [hidden]="!formGroup.controls['ClienteEndereco'].errors"
+            class="text-danger"><small>Campo obrigatório </small></div>
+        </div>
+      </kendo-textbox-container>
+    </div>
+
+    <div class="d-flex flex-row">
+
+      <kendo-textbox-container class='m-2 w-25' floatingLabel="Número:">
+        <div>
+          <input kendoTextBox kendoTooltip
+            [ngClass]="{'k-state-invalid':
+            formGroup.controls['ClienteEnderecoNumero'].pristine &&
+            formGroup.controls['ClienteEnderecoNumero'].errors }"
+            formControlName="ClienteEnderecoNumero" [title]="" />
+          <div
+            *ngIf="formGroup.controls['ClienteEnderecoNumero'].errors
+            &&
+            formGroup.controls['ClienteEnderecoNumero'].pristine"
+            class="error-msg">
+            <div
+              [hidden]="!formGroup.controls['ClienteEnderecoNumero'].errors"
+              class="text-danger"><small>Campo obrigatório </small></div>
+          </div>
+        </div>
+      </kendo-textbox-container>
+
+      <kendo-textbox-container class='m-2 w-25' floatingLabel="Complemento:">
+        <div>
+          <input kendoTextBox kendoTooltip
+            [ngClass]="{'k-state-invalid':
+            formGroup.controls['ClienteEnderecoComplemento'].pristine &&
+            formGroup.controls['ClienteEnderecoComplemento'].errors }"
+            formControlName="ClienteEnderecoComplemento" [title]="" />
+          <div
+            *ngIf="formGroup.controls['ClienteEnderecoComplemento'].errors
+            &&
+            formGroup.controls['ClienteEnderecoComplemento'].pristine"
+            class="error-msg">
+            <div
+              [hidden]="!formGroup.controls['ClienteEnderecoComplemento'].errors"
+              class="text-danger"><small>Campo obrigatório </small></div>
+          </div>
+        </div>
+      </kendo-textbox-container>
+      <div class="m-2 w-100">
+        <kendo-textbox-container floatingLabel="Bairro :">
+          <input kendoTextBox kendoTooltip
+            [ngClass]="{'k-state-invalid':
+            formGroup.controls['ClienteEnderecoBairro'].pristine &&
+            formGroup.controls['ClienteEnderecoBairro'].errors }"
+            formControlName="ClienteEnderecoBairro" [title]="" />
+          <div
+            *ngIf="formGroup.controls['ClienteEnderecoBairro'].errors
+            &&
+            formGroup.controls['ClienteEnderecoBairro'].pristine"
+            class="error-msg">
+            <div
+              [hidden]="!formGroup.controls['ClienteEnderecoBairro'].errors"
+              class="text-danger"><small>Campo obrigatório </small></div>
+          </div>
+        </kendo-textbox-container>
+      </div>
+    </div>
+    <div class="d-flex flex-row">
+      <kendo-textbox-container class='m-2 w-25' floatingLabel="Cidade:">
+        <div>
+          <input kendoTextBox kendoTooltip
+            [ngClass]="{'k-state-invalid':
+            formGroup.controls['ClienteEnderecoCidade'].pristine &&
+            formGroup.controls['ClienteEnderecoCidade'].errors }"
+            formControlName="ClienteEnderecoCidade" [title]="" />
+          <div
+            *ngIf="formGroup.controls['ClienteEnderecoCidade'].errors
+            &&
+            formGroup.controls['ClienteEnderecoCidade'].pristine"
+            class="error-msg">
+            <div
+              [hidden]="!formGroup.controls['ClienteEnderecoCidade'].errors"
+              class="text-danger"><small>Campo obrigatório </small></div>
+          </div>
+        </div>
+      </kendo-textbox-container>
+
+      <kendo-textbox-container class='m-2 w-25' floatingLabel="Uf:">
+        <div>
+          <input kendoTextBox kendoTooltip
+            [ngClass]="{'k-state-invalid':
+            formGroup.controls['ClienteEnderecoUF'].pristine &&
+            formGroup.controls['ClienteEnderecoUF'].errors }"
+            formControlName="ClienteEnderecoUF" [title]="" />
+          <div
+            *ngIf="formGroup.controls['ClienteEnderecoUF'].errors
+            &&
+            formGroup.controls['ClienteEnderecoUF'].pristine"
+            class="error-msg">
+            <div
+              [hidden]="!formGroup.controls['ClienteEnderecoUF'].errors"
+              class="text-danger"><small>Campo obrigatório </small></div>
+          </div>
+        </div>
+      </kendo-textbox-container>
+
+      <kendo-textbox-container class='m-2 w-25' floatingLabel="País:">
+        <div>
+          <input kendoTextBox kendoTooltip
+            [ngClass]="{'k-state-invalid':
+            formGroup.controls['ClienteEnderecoPais'].pristine &&
+            formGroup.controls['ClienteEnderecoPais'].errors }"
+            formControlName="ClienteEnderecoPais" [title]="" />
+          <div
+            *ngIf="formGroup.controls['ClienteEnderecoPais'].errors
+            &&
+            formGroup.controls['ClienteEnderecoPais'].pristine"
+            class="error-msg">
+            <div
+              [hidden]="!formGroup.controls['ClienteEnderecoPais'].errors"
+              class="text-danger"><small>Campo obrigatório </small></div>
+          </div>
+        </div>
+      </kendo-textbox-container>
+
+      <kendo-textbox-container class='m-2 w-25' floatingLabel="Código do
+        município:">
+        <div>
+          <input kendoTextBox kendoTooltip
+            [ngClass]="{'k-state-invalid':
+            formGroup.controls['ClienteEnderecoCodigoMunicipio'].pristine &&
+            formGroup.controls['ClienteEnderecoCodigoMunicipio'].errors }"
+            formControlName="ClienteEnderecoCodigoMunicipio" [title]="" />
+          <div
+            *ngIf="formGroup.controls['ClienteEnderecoCodigoMunicipio'].errors
+            &&
+            formGroup.controls['ClienteEnderecoCodigoMunicipio'].pristine"
+            class="error-msg">
+            <div
+              [hidden]="!formGroup.controls['ClienteEnderecoCodigoMunicipio'].errors"
+              class="text-danger"><small>Campo obrigatório </small></div>
+          </div>
+        </div>
+      </kendo-textbox-container>
+    </div>
+    <div class="d-flex flex-row flex-wrap">
+      <kendo-textbox-container class='m-2'
+        [floatingLabel]="tipoCliente ? 'CNPJ' : 'CPF'">
+        <div>
+          <input mask="{{tipoCliente ? maskCNPJ : maskCPF}}"
+            class="k-textbox"
+            [ngClass]="{'k-state-invalid': formGroup.controls[tipoCliente ?
+            'ClienteEnderecoCNPJ' :'ClienteEnderecoCPF'].pristine &&
+            formGroup.controls[tipoCliente ? 'ClienteEnderecoCNPJ' :
+            'ClienteEnderecoCPF'].errors }"
+            [formControl]="tipoCliente ? formGroup.get('ClienteEnderecoCNPJ') :
+            formGroup.get('ClienteEnderecoCPF')"
+            [title]="">
+          <div *ngIf="formGroup.controls[tipoCliente ? 'ClienteEnderecoCNPJ'
+            : 'ClienteEnderecoCPF' ].errors &&
+            formGroup.controls[tipoCliente ? 'ClienteEnderecoCNPJ' :
+            'ClienteEnderecoCPF' ].pristine" class="error-msg">
+            <div
+              [hidden]="!formGroup.controls[tipoCliente ?
+              'ClienteEnderecoCNPJ' : 'ClienteEnderecoCPF' ].errors.required"
+              class="text-danger"><small>Campo Obrigatório</small></div>
+          </div>
+        </div>
+      </kendo-textbox-container>
+
+      <kendo-textbox-container class='m-2 w-25' floatingLabel="Inscrição
+        Estadual:" *ngIf="tipoCliente">
+        <div>
+          <input kendoTextBox kendoTooltip
+            [ngClass]="{'k-state-invalid':
+            formGroup.controls['ClienteEnderecoInscricaoEstadual'].pristine &&
+            formGroup.controls['ClienteEnderecoInscricaoEstadual'].errors }"
+            formControlName="ClienteEnderecoInscricaoEstadual" [title]="" />
+          <div
+            *ngIf="formGroup.controls['ClienteEnderecoInscricaoEstadual'].errors
+            &&
+            formGroup.controls['ClienteEnderecoInscricaoEstadual'].pristine"
+            class="error-msg">
+            <div
+              [hidden]="!formGroup.controls['ClienteEnderecoInscricaoEstadual'].errors"
+              class="text-danger"><small>Campo obrigatório </small></div>
+          </div>
+        </div>
+      </kendo-textbox-container>
+
+      <kendo-textbox-container class='m-2 w-25' floatingLabel="Telefone:">
+        <div>
+          <input kendoTextBox kendoTooltip
+            mask={{maskTelefone}}
+            [ngClass]="{'k-state-invalid':
+            formGroup.controls['ClienteEnderecoInscricaoEstadual'].pristine &&
+            formGroup.controls['ClienteEnderecoInscricaoEstadual'].errors }"
+            formControlName="ClienteEnderecoTelefone" [title]="" />
+
+        </div>
+      </kendo-textbox-container>
+
+      <kendo-textbox-container class='m-2 w-25' floatingLabel="Sequencia:">
+        <div>
+          <input kendoTextBox kendoTooltip
+            [ngClass]="{'k-state-invalid':
+            formGroup.controls['ClienteEnderecoSequencia'].pristine &&
+            formGroup.controls['ClienteEnderecoInscricaoEstadual'].errors }"
+            formControlName="ClienteEnderecoSequencia" [title]="" />
+
+        </div>
+      </kendo-textbox-container>
+    </div>
+    <div class="d-flex flex-row flex-wrap justify-content-end mr-3">
+      <div *ngIf="created">
+        <h5 class="text-success mt-4 mx-3">Endereço salvo com sucesso</h5>
+      </div>
+      <div class='m-2'>
+        <button kendoButton class="m-2" (click)="cancelAction()">Cancelar</button>
+        <button kendoButton (click)="salvarDados()" class="m-2"
+          [disabled]="formGroup.invalid" [primary]="true">Salvar</button>
+      </div>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,73 @@
+<kendo-grid
+  [data]="view | async"
+  [height]="400"
+  [loading]="loading"
+  (edit)="editHandler($event)"
+  (cancel)="cancelHandler($event)"
+  (save)="saveHandler($event)"
+  (remove)="removeHandler($event)"
+  (add)="addHandler($event)"
+  [resizable]="true"
+  [pageSize]="gridState.take" [skip]="gridState.skip"
+  [sort]="gridState.sort"
+  [filter]="gridState.filter"
+  [pageable]="true" [sortable]="true"
+  (dataStateChange)="onStateChange($event)">
+
+  <kendo-grid-column field="TipoEstoqueDescricao"
+    title="Tipo de estoque">
+
+  </kendo-grid-column>
+
+  <kendo-grid-column field="MovEstoqueQtdeAnterior"
+    title="Quantidade Anterior">
+    <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+      {{dataItem.MovEstoqueQtdeAnterior | number: '1.0-0'}}
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-column title="Quantidade Movimentada">
+    <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+      <div class="d-flex flex-row justify-content-center text-success"
+        *ngIf="(dataItem.MovEstoqueQuantidade -
+        dataItem.MovEstoqueQtdeAnterior)>
+        0 ; else baixa">
+        + {{dataItem.MovEstoqueQuantidade - dataItem.MovEstoqueQtdeAnterior |
+        number: '1.0-0'}}
+      </div>
+
+      <ng-template #baixa>
+        <div class="d-flex flex-row justify-content-center text-danger">
+          {{dataItem.MovEstoqueQuantidade - dataItem.MovEstoqueQtdeAnterior |
+          number: '1.0-0'}}
+        </div>
+      </ng-template>
+
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-column field="MovEstoqueQuantidade" title="Quantidade Atual">
+    <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+      {{dataItem.MovEstoqueQuantidade | number: '1.0-0'}}
+    </ng-template>
+  </kendo-grid-column>
+
+
+  <kendo-grid-column field="MovEstoqueValor" title="Valot total do Estoque">
+    <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+      {{dataItem.MovEstoqueValor | currency: 'BRL'}}
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-command-column title="Ultima Movimentação" width="260">
+    <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+      <i kendoTooltip *ngIf="!isNew" class="icon-user ml-2"
+        title="Usuário:
+        {{dataItem.MovEstoqueQtdeUsuario}} Data:
+        {{dataItem.MovEstoqueQtdeData |
+        date:'short'}}"></i>
+    </ng-template>
+  </kendo-grid-command-column>
+
+
+</kendo-grid>

@@ -1,0 +1,191 @@
+<div class="k-overlay" *ngIf="openedCadPedido || openedRemovePedido"></div>
+<kendo-grid
+  [data]="view | async"
+  [height]="600"
+  [loading]="loading"
+  (edit)="editHandler($event)"
+  (cancel)="cancelHandler($event)"
+  (save)="saveHandler($event)"
+  filterable="menu"
+  [resizable]='true'
+  (remove)="removeHandler($event)"
+  (add)="addHandler($event)"
+  [pageSize]="gridState.take" [skip]="gridState.skip" [sort]="gridState.sort"
+  [filter]="gridState.filter"
+  [pageable]="true" [sortable]="true"
+  (dataStateChange)="onStateChange($event)">
+  <kendo-grid-messages noRecords="Nenhum registro encontrado."
+    filterFilterButton="Filtrar"
+    filterClearButton="Limpar" filterContainsOperator="Contém">
+  </kendo-grid-messages>
+  <ng-template kendoGridToolbarTemplate let-filter>
+    <div class="row d-flex mx-3 justify-content-between">
+      <div class="d-flex flex-row justify-content-center align-items-center"
+        kendoTooltip position="right">
+        <div class="mt-2">
+          <button kendoButton (click)="opem({isNew:true})" title="Novo Pedido">Novo
+          </button>
+          <button [icon]="'file-excel'" kendoGridExcelCommand>Excel</button>
+          <button [icon]="'file-pdf'" kendoGridPDFCommand>PDF</button>
+        </div>
+
+      </div>
+      <div class="d-flex flex-row">
+        <div>
+          <incca-date-range-filter-cell-component
+            [filter]="filter"
+            [field]="'PedidoEmissao'">
+          </incca-date-range-filter-cell-component>
+        </div>
+        <a kendoTooltip position="left"
+          tooltipWidth="400"
+          [title]="getHelp('Pedido','Tela')?.helpTexto" class="nav-link"><i
+            class="icon-info"></i></a>
+      </div>
+    </div>
+  </ng-template>
+  <div *ngFor="let col of columns">
+    <kendo-grid-column [field]="col.field" [title]="col.title"
+      class="no-padding" [sortable]="col.field !== 'PedidoTotalValor'"
+      [filterable]="col.field !== 'PedidoTotalValor'" filter="date">
+      <ng-template kendoGridHeaderTemplate let-column
+        let-columnIndex="columnIndex">
+        <span kendoTooltip [title]="getHelp(col.field,'Atributo')?.helpTexto">{{column.title}}</span>
+      </ng-template>
+      <ng-template kendoGridFilterMenuTemplate let-filter let-column="column"
+        let-filterService="filterService">
+        <div *ngIf="col.field === 'ClienteNome' || col.field === 'PedidoCodigo'
+          ;else dropdown">
+          <incca-input-filter
+            [filter]="filter"
+            [valueField]="col.field">
+          </incca-input-filter>
+        </div>
+        <ng-template #dropdown>
+          <div *ngIf="col.field === 'PedidoTipoPedido'">
+            <incca-dropdownlist-filter
+              [filter]="filter"
+              [valueField]="'PedidoTipoPedido'"
+              [data]="tipoPedidoList"
+              [textField]="'descricao'">
+            </incca-dropdownlist-filter>
+          </div>
+          <div *ngIf="col.field === 'ClienteId'">
+            <!-- <incca-dropdownlist-filter
+            [filter]="filter"
+            [valueField]="'PedidoTipoPedido'"
+            [data]="tipoPedidoList"
+            [textField]=" 'descricao'">
+          </incca-dropdownlist-filter> -->
+          </div>
+          <div *ngIf="col.field === 'PedidoEmissao'">
+
+          </div>
+
+        </ng-template>
+      </ng-template>
+      <ng-template kendoGridCellTemplate let-dataItem *ngIf="col.field ===
+        'PedidoCodigo'">
+        <div class="whole-cell">
+          {{dataItem.PedidoCodigo }}
+        </div>
+      </ng-template>
+      <ng-template kendoGridCellTemplate let-dataItem *ngIf="col.field ===
+        'PedidoEmissao'">
+        <div class="whole-cell">
+          {{dataItem.PedidoEmissao | date:'shortDate'}}
+        </div>
+      </ng-template>
+      <ng-template kendoGridCellTemplate let-dataItem *ngIf="col.field ===
+        'PedidoTipoPedido'">
+        <div class="whole-cell">
+          <h5 [class]="colorCode(dataItem.PedidoTipoPedido)">
+            {{ getTipoPedido(dataItem.PedidoTipoPedido) }}
+          </h5>
+        </div>
+      </ng-template>
+      <ng-template kendoGridCellTemplate let-dataItem *ngIf="col.field ===
+        'PedidoTotalValor'">
+
+        <div class="whole-cell">
+          <div class="d-flex justify-content-start">
+            {{dataItem.PedidoTotalValor - dataItem.PedidoDescontoValor |
+            currency
+            :'BRL'}}
+            <h6 *ngIf="dataItem.PedidoDesconto> 0" class="text-danger mx-1">-
+              {{dataItem.PedidoDesconto / 100| percent}}</h6>
+          </div>
+        </div>
+
+      </ng-template>
+      <ng-template kendoGridCellTemplate let-dataItem *ngIf="col.field ===
+        'ClienteNome'">
+        <div class="whole-cell">
+          {{dataItem.ClienteNome +" "+ dataItem.ClienteNomeFantasia}}
+        </div>
+      </ng-template>
+    </kendo-grid-column>
+  </div>
+  <kendo-grid-command-column title="Opções" width="220">
+    <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+      <button kendoButton (click)="opem({isNew:isNew,dataItem:dataItem})"
+        [primary]="true">Editar</button>
+      <button kendoGridRemoveCommand>Apagar</button>
+      <button kendoGridSaveCommand [disabled]="formGroup?.invalid">{{ isNew ?
+        'Adicionar' : 'Atualizar' }}</button>
+      <button kendoGridCancelCommand>{{ isNew ? 'Cancelar' : 'Cancelar' }}</button>
+      <i kendoTooltip *ngIf="!isNew" class="icon-user ml-2" title="Usuário:
+        {{dataItem.PedidoAlteracaoUsuario}} Data:
+        {{dataItem.PedidoAlteracaoData | date:'shortDate'}}"></i>
+    </ng-template>
+  </kendo-grid-command-column>
+
+  <kendo-grid-excel fileName="Pedidos.xlsx">
+    <kendo-grid-excel fileName="Pedidos.xlsx">
+      <div *ngFor="let colex of columnsExcel">
+        <kendo-excelexport-column field="{{colex.colunm}}"
+          title="{{addSpace(colex.colunm)}}">
+        </kendo-excelexport-column>
+      </div>
+    </kendo-grid-excel>
+  </kendo-grid-excel>
+
+  <kendo-grid-pdf fileName="Pedidos.pdf" [allPages]="true" paperSize="A4"
+    [repeatHeaders]="true" [landscape]="true">
+    <kendo-grid-pdf-margin top="2cm" left="1cm" right="1cm" bottom="2cm"></kendo-grid-pdf-margin>
+    <ng-template kendoGridPDFTemplate let-pageNum="pageNum"
+      let-totalPages="totalPages">
+      <div class="page-template">
+        <div class="header">
+          <div style="float: right">Page {{ pageNum }} of {{ totalPages }}</div>
+          Multi-page grid with automatic page breaking
+        </div>
+        <div class="footer">
+          Pagina {{ pageNum }} de {{ totalPages }}
+        </div>
+      </div>
+    </ng-template>
+  </kendo-grid-pdf>
+
+</kendo-grid>
+
+<kendo-window #kendoPedidoForm top="20" title="Cadastro de Pedido"
+  *ngIf="openedCadPedido"
+  (close)="close()" [minWidth]="300" [width]="1400" [height]="750">
+  <incca-pedido-form [isNew]="isNew" [formGroup]="createFormGroup"
+    [tipoComissao]="tipoComissao" (opemNewPedido)="opemNewPedido($event)">
+  </incca-pedido-form>
+</kendo-window>
+
+<kendo-window top="280" title="Deseja excluir este pedido"
+  *ngIf="openedRemovePedido"
+  (close)="closeRemovePedido()" [minWidth]="300" [width]="600" [height]="250">
+  <div class="d-flex flex-row my-3 justify-content-center align-items-center">
+    <p>Ao confirmar o pedido e seus itens serão removidos</p>
+  </div>
+  <div class="d-flex flex-row justify-content-center align-items-center">
+    <button class="mx-2" kendoButton (click)="buttonConfirm(true)"
+      [primary]="true">Confirmar</button>
+    <button class="mx-2" kendoButton (click)="buttonConfirm(false)">Cancelar</button>
+  </div>
+</kendo-window>

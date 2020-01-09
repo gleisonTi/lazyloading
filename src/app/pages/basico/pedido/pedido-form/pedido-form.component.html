@@ -1,0 +1,818 @@
+
+
+
+<incca-search-produtos
+  [typePanel]="'Pedido'"
+  [tabelaPrecoId]="tabelaPreco"
+  (sendprodutos)="produtosSelecionados($event)">
+</incca-search-produtos>
+
+<div class="d-flex flex-row">
+  <div class="d-flex flex-column col-md-4">
+    <div class="d-flex flex-row flex-wrap
+      align-items-center">
+      <h4 class="mt-1">Pedido {{formGroup.value.PedidoCodigo}} </h4>
+      <div class="d-flex flex-row justify-content-between" *ngIf="!isNew &&
+        !loading">
+        <div class="d-flex flex-row justify-content-center align-items-center
+          mx-2 ml-3">
+          <i kendoTooltip title="Cliente" class="icon-user mx-2"></i>
+          <small>{{cliente?.ClienteNome}}</small>
+        </div>
+        <div class="d-flex flex-row justify-content-center align-items-center
+          mx-2">
+          <i kendoTooltip title="Vendedor" class="far fa-handshake mx-2"></i>
+          <small>{{representante?.ClienteNome+'
+            '+representante?.ClienteNomeFantasia}} </small>
+        </div>
+      </div>
+    </div>
+    <kendo-tabstrip>
+      <kendo-tabstrip-tab [title]="'Geral'" [selected]="true">
+        <ng-template kendoTabContent>
+          <div class=' w-100'>
+            <form [formGroup]="formGroup">
+              <div class="d-flex flex-row justify-content-center my-2">
+                <div *ngIf="formGroup.invalid" class="error-msg">
+                  <div *ngIf="formGroup.invalid" class="text-danger"><small>*Os
+                      Campos em destaque são obrigatórios</small></div>
+                </div>
+              </div>
+              <div class="d-flex flex-row">
+                <div class="d-flex flex-row w-50">
+                  <div class="d-flex flex-row h-50">
+                    <div>
+                      <div class="d-flex w-100 flex-column mx-2 mb-3">
+                        <small>Cliente: </small>
+                        <kendo-dropdownlist
+                          formControlName="ClienteId"
+                          [defaultItem]="{ClienteId: '', ClienteNome:
+                          'Selecione...'}"
+                          [valuePrimitive]="true"
+                          [data]="clienteList"
+                          [loading]="loading"
+                          [filterable]='true'
+                          (filterChange)="handleFilterCliente($event)"
+                          (valueChange)="valueClienteChange($event,'cliente')"
+                          [valuePrimitive]="true"
+                          [ngClass]="{'k-state-invalid':
+                          formGroup.controls['ClienteId'].pristine &&
+                          formGroup.controls['ClienteId'].errors }"
+                          [textField]="'ClienteNome'"
+                          [valueField]="'ClienteId'"
+                          kendoTooltip [title]="">
+                        </kendo-dropdownlist>
+                        <div *ngIf="formGroup.controls['ClienteId'].errors &&
+                          formGroup.controls['ClienteId'].pristine"
+                          class="error-msg
+                          d-flex flex-row">
+                          <div
+                            [hidden]="!formGroup.controls['ClienteId'].errors"
+                            class="text-danger">
+                            <small>Defina o Cliente</small>
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <div class="d-flex flex-column mx-2 mb-3">
+                          <small>Tipo de Pedido: </small>
+                          <kendo-dropdownlist
+                            formControlName="TipoPedido"
+                            [loading]="loading"
+                            [valuePrimitive]="true"
+                            [data]="[{value:'producao',descricao:'Produção'},{value:'revenda',descricao:'Revenda'}]"
+                            [valuePrimitive]="true"
+                            (valueChange)="onTipoChange($event)"
+                            [textField]="'descricao'"
+                            [valueField]="'value'"
+                            kendoTooltip [title]="">
+                          </kendo-dropdownlist>
+                        </div>
+                      </div>
+                      <div>
+                        <div class="d-flex flex-column mx-2 mb-3">
+                          <small>Data de Emissão: </small>
+                          <kendo-datepicker formControlName="PedidoEmissao"></kendo-datepicker>
+                          <div
+                            *ngIf="formGroup.controls['PedidoEmissao'].errors
+                            && formGroup.controls['PedidoEmissao'].dirty"
+                            class="error-msg">
+                            <div
+                              [hidden]="!formGroup.controls['PedidoEmissao'].errors"
+                              class="text-danger"><small>Campo obrigatório
+                              </small></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="d-flex flex-row w-50 mr-3">
+                  <div class="d-flex flex-row m-1 p-2">
+                  </div>
+                  <div class="d-flex w-100 h-100 justify-content-center
+                    align-items-center" *ngIf="loading else dataCliente">
+                    <div class="k-i-loading" style="font-size: 30px;color:
+                      #8a8989;">
+                    </div>
+                  </div>
+                  <ng-template #dataCliente>
+                    <incca-show-pedido-cliente
+                      [cliente]="cliente"
+                      [clienteEndereco]="clienteEndereco">
+                    </incca-show-pedido-cliente>
+                  </ng-template>
+                </div>
+              </div>
+            </form>
+          </div>
+        </ng-template>
+      </kendo-tabstrip-tab>
+      <div *ngIf="tipoComissao === '1'">
+        <kendo-tabstrip-tab [title]="'Vendedor'">
+          <ng-template kendoTabContent>
+            <form [formGroup]="formGroup">
+              <div class="d-flex flex-row my-3">
+                <div class="d-flex w-50 flex-column mx-2">
+                  <div class="d-flex w-100 flex-column">
+                    <small>Representante: </small>
+                    <kendo-dropdownlist
+                      formControlName="PedidoRepresentanteId"
+                      [defaultItem]="{ClienteId: '', ClienteNome:
+                      'Selecione...'}"
+                      [valuePrimitive]="true"
+                      [data]="representanteList"
+                      [loading]="loading"
+                      [filterable]='true'
+                      (valueChange)="valueClienteChange($event,'representante')"
+                      [ngClass]="{'k-state-invalid':
+                      formGroup.controls['PedidoRepresentanteId'].pristine &&
+                      formGroup.controls['PedidoRepresentanteId'].errors }"
+                      (filterChange)="handleFilterRepresentante($event)"
+                      [valuePrimitive]="true"
+                      [textField]="'ClienteNome'"
+                      [valueField]="'ClienteId'"
+                      kendoTooltip [title]="">
+                    </kendo-dropdownlist>
+                    <div
+                      *ngIf="formGroup.controls['PedidoRepresentanteId'].errors
+                      &&
+                      formGroup.controls['PedidoRepresentanteId'].pristine"
+                      class="error-msg
+                      d-flex flex-row">
+                      <div
+                        [hidden]="!formGroup.controls['PedidoRepresentanteId'].errors"
+                        class="text-danger">
+                        <small>Defina o Representante</small>
+                      </div>
+                    </div>
+
+                    <div class="d-flex flex-column my-3">
+                      <small>Tipo de Representante: </small>
+                      <kendo-dropdownlist
+                        formControlName="PedidoComissaoTipoRepresentante"
+                        [valuePrimitive]="true"
+                        [data]="tipoRepresentantelist"
+                        [valuePrimitive]="true"
+                        [textField]="'descricao'"
+                        [valueField]="'PedidoComissaoTipoRepresentante'"
+                        kendoTooltip [title]="">
+                      </kendo-dropdownlist>
+                    </div>
+                    <kendo-textbox-container floatingLabel="% de Comissão">
+                      <input kendoTextBox kendoTooltip maxlength="9"
+                        formControlName="PedidoComissaoMedia" [title]="" />
+                      <div
+                        *ngIf="formGroup.controls['PedidoComissaoMedia'].errors
+                        && formGroup.controls['PedidoComissaoMedia'].dirty"
+                        class="error-msg">
+                        <div
+                          [hidden]="!formGroup.controls['PedidoComissaoMedia'].errors"
+                          class="text-danger">
+                          <small>Campo Obrigatório e Somente Números
+                          </small>
+                        </div>
+                      </div>
+                    </kendo-textbox-container>
+                  </div>
+                </div>
+                <div class="d-flex w-50 flex-column">
+                  <div class="d-flex w-100 h-100 justify-content-center
+                    align-items-center" *ngIf="loading else
+                    dataRepresentante">
+                    <div class="k-i-loading" style="font-size: 30px;color:
+                      #8a8989;">
+                    </div>
+                  </div>
+                  <ng-template #dataRepresentante>
+                    <incca-show-pedido-cliente
+                      [cliente]="representante">
+                    </incca-show-pedido-cliente>
+                  </ng-template>
+                </div>
+              </div>
+            </form>
+          </ng-template>
+        </kendo-tabstrip-tab>
+      </div>
+
+      <kendo-tabstrip-tab [title]="'Trasportadora'">
+        <ng-template kendoTabContent>
+          <form [formGroup]="formGroup">
+            <div class="d-flex flex-row my-3">
+              <div class="d-flex w-50 flex-column mx-2">
+                <small>Transportadora: </small>
+                <kendo-dropdownlist
+                  formControlName="PedidoTransportadora"
+                  [defaultItem]="{ClienteId: '', ClienteNome:
+                  'Selecione...'}"
+                  [valuePrimitive]="true"
+                  [data]="trasportadoraList"
+                  [loading]="loading"
+                  [filterable]='true'
+                  (filterChange)="handleFilterTransportadora($event)"
+                  (valueChange)="valueClienteChange($event,'transportadora')"
+                  [valuePrimitive]="true"
+                  [textField]="'ClienteNome'"
+                  [valueField]="'ClienteId'"
+                  kendoTooltip [title]="">
+                </kendo-dropdownlist>
+
+                <div class="d-flex my-3 flex-column">
+                  <small>Tipo de frete: </small>
+                  <kendo-dropdownlist
+                    formControlName="PedidoTipoFrete"
+                    [valuePrimitive]="true"
+                    [loading]="loading"
+                    [data]="FreteList"
+                    [valuePrimitive]="true"
+                    [textField]="'descricao'"
+                    [valueField]="'PedidoTipoFrete'"
+                    kendoTooltip [title]="">
+                  </kendo-dropdownlist>
+                </div>
+              </div>
+              <div class="d-flex w-50 flex-column">
+                <div class="d-flex w-100 h-100 justify-content-center
+                  align-items-center" *ngIf="loading else
+                  dataTransportadora">
+                  <div class="k-i-loading" style="font-size: 30px;color:
+                    #8a8989;">
+                  </div>
+                </div>
+                <ng-template #dataTransportadora>
+                  <incca-show-pedido-cliente
+                    [cliente]="trasportadora">
+                  </incca-show-pedido-cliente>
+                </ng-template>
+              </div>
+            </div>
+          </form>
+        </ng-template>
+      </kendo-tabstrip-tab>
+      <kendo-tabstrip-tab [title]="'Endereços'">
+        <ng-template kendoTabContent>
+          <div class=' w-100'>
+            <form [formGroup]="formGroup">
+              <div class="row my-2">
+              </div>
+              <div class="d-flex justify-content-center mx-3">
+                <div *ngIf="formGroup.invalid" class="error-msg">
+                  <div *ngIf="formGroup.dirty" class="text-danger"><small>*Os
+                      Campos em destaque são obrigatórios</small></div>
+                </div>
+              </div>
+
+              <div class="mt-2">
+                <h5>Endereço de entrega</h5>
+              </div>
+              <div class="row p-2">
+                <div class="d-flex flex-row flex-wrap w-100">
+                  <kendo-textbox-container class='m-2 w-25'
+                    floatingLabel="Cep:">
+                    <input kendoTextBox kendoTooltip
+                      formControlName="PedidoCepEntrega" [title]="" />
+                    <div
+                      *ngIf="formGroup.controls['PedidoCepEntrega'].errors
+                      &&
+                      formGroup.controls['PedidoCepEntrega'].touched"
+                      class="error-msg">
+                      <div
+                        [hidden]="!formGroup.controls['PedidoCepEntrega'].errors"
+                        class="text-danger"><small>Campo obrigatório
+                        </small></div>
+                    </div>
+                  </kendo-textbox-container>
+                  <kendo-textbox-container class='m-2 w-25'
+                    floatingLabel="Nome:">
+                    <input kendoTextBox kendoTooltip
+                      formControlName="PedidoNomeEntrega" [title]="" />
+                    <div
+                      *ngIf="formGroup.controls['PedidoNomeEntrega'].errors
+                      &&
+                      formGroup.controls['PedidoNomeEntrega'].touched"
+                      class="error-msg">
+                      <div
+                        [hidden]="!formGroup.controls['PedidoNomeEntrega'].errors"
+                        class="text-danger"><small>Campo obrigatório
+                        </small></div>
+                    </div>
+                  </kendo-textbox-container>
+
+                  <kendo-textbox-container class='m-2 w-50'
+                    floatingLabel="Endereço :">
+                    <input kendoTextBox kendoTooltip
+                      formControlName="PedidoEnderecoEntrega" [title]=""
+                      />
+                    <div
+                      *ngIf="formGroup.controls['PedidoEnderecoEntrega'].errors
+                      &&
+                      formGroup.controls['PedidoEnderecoEntrega'].touched"
+                      class="error-msg">
+                      <div
+                        [hidden]="!formGroup.controls['PedidoEnderecoEntrega'].errors"
+                        class="text-danger"><small>Campo obrigatório
+                        </small></div>
+                    </div>
+                  </kendo-textbox-container>
+                </div>
+                <div class="d-flex flex-row flex-wrap">
+                  <kendo-textbox-container class='m-2 w-50'
+                    floatingLabel="Bairro:">
+                    <input kendoTextBox kendoTooltip
+                      formControlName="PedidoBairroEntrega" [title]="" />
+                    <div
+                      *ngIf="formGroup.controls['PedidoBairroEntrega'].errors
+                      &&
+                      formGroup.controls['PedidoBairroEntrega'].touched"
+                      class="error-msg">
+                      <div
+                        [hidden]="!formGroup.controls['PedidoBairroEntrega'].errors"
+                        class="text-danger"><small>Campo obrigatório
+                        </small></div>
+                    </div>
+                  </kendo-textbox-container>
+                  <kendo-textbox-container class='m-2 w-25'
+                    floatingLabel="Cidade :">
+                    <input kendoTextBox kendoTooltip
+                      formControlName="PedidoCidadeEntrega" [title]="" />
+                    <div
+                      *ngIf="formGroup.controls['PedidoCidadeEntrega'].errors
+                      &&
+                      formGroup.controls['PedidoCidadeEntrega'].touched"
+                      class="error-msg">
+                      <div
+                        [hidden]="!formGroup.controls['PedidoCidadeEntrega'].errors"
+                        class="text-danger"><small>Campo obrigatório
+                        </small></div>
+                    </div>
+                  </kendo-textbox-container>
+                  <kendo-textbox-container class='m-2 w-25'
+                    floatingLabel="Uf:">
+                    <input kendoTextBox kendoTooltip
+                      formControlName="PedidoUFEntrega" [title]="" />
+                    <div
+                      *ngIf="formGroup.controls['PedidoUFEntrega'].errors
+                      &&
+                      formGroup.controls['PedidoUFEntrega'].touched"
+                      class="error-msg">
+                      <div
+                        [hidden]="!formGroup.controls['PedidoUFEntrega'].errors"
+                        class="text-danger"><small>Campo obrigatório
+                        </small></div>
+                    </div>
+                  </kendo-textbox-container>
+                </div>
+
+              </div>
+              <div class="mt-2">
+                <h5>Endereço de cobrança</h5>
+              </div>
+              <div class="row p-2">
+                <div class="d-flex flex-row w-100 flex-wrap">
+                  <kendo-textbox-container class='m-2 w-25'
+                    floatingLabel="Cep:">
+                    <input kendoTextBox kendoTooltip
+                      formControlName="PedidoCepCobranca" [title]="" />
+                    <div
+                      *ngIf="formGroup.controls['PedidoCepCobranca'].errors
+                      &&
+                      formGroup.controls['PedidoCepCobranca'].touched"
+                      class="error-msg">
+                      <div
+                        [hidden]="!formGroup.controls['PedidoCepCobranca'].errors"
+                        class="text-danger"><small>Campo obrigatório
+                        </small></div>
+                    </div>
+                  </kendo-textbox-container>
+                  <kendo-textbox-container class='m-2 w-25'
+                    floatingLabel="Nome:">
+                    <input kendoTextBox kendoTooltip
+                      formControlName="PedidoNomeCobranca" [title]="" />
+                    <div
+                      *ngIf="formGroup.controls['PedidoNomeCobranca'].errors
+                      &&
+                      formGroup.controls['PedidoNomeCobranca'].touched"
+                      class="error-msg">
+                      <div
+                        [hidden]="!formGroup.controls['PedidoNomeCobranca'].errors"
+                        class="text-danger"><small>Campo obrigatório
+                        </small></div>
+                    </div>
+                  </kendo-textbox-container>
+
+                  <kendo-textbox-container class='m-2 w-50'
+                    floatingLabel="Endereço :">
+                    <input kendoTextBox kendoTooltip
+                      formControlName="PedidoEnderecoCobranca" [title]=""
+                      />
+                    <div
+                      *ngIf="formGroup.controls['PedidoEnderecoCobranca'].errors
+                      &&
+                      formGroup.controls['PedidoEnderecoCobranca'].touched"
+                      class="error-msg">
+                      <div
+                        [hidden]="!formGroup.controls['PedidoEnderecoCobranca'].errors"
+                        class="text-danger"><small>Campo obrigatório
+                        </small></div>
+                    </div>
+                  </kendo-textbox-container>
+                </div>
+                <div class="d-flex flex-row flex-wrap">
+                  <kendo-textbox-container class='m-2 w-50'
+                    floatingLabel="Bairro:">
+                    <input kendoTextBox kendoTooltip
+                      formControlName="PedidoBairroCobranca" [title]="" />
+                    <div
+                      *ngIf="formGroup.controls['PedidoBairroCobranca'].errors
+                      &&
+                      formGroup.controls['PedidoBairroCobranca'].touched"
+                      class="error-msg">
+                      <div
+                        [hidden]="!formGroup.controls['PedidoBairroCobranca'].errors"
+                        class="text-danger"><small>Campo obrigatório
+                        </small></div>
+                    </div>
+                  </kendo-textbox-container>
+                  <kendo-textbox-container class='m-2 w-25'
+                    floatingLabel="Cidade :">
+                    <input kendoTextBox kendoTooltip
+                      formControlName="PedidoCidadeCobranca" [title]="" />
+                    <div
+                      *ngIf="formGroup.controls['PedidoCidadeCobranca'].errors
+                      &&
+                      formGroup.controls['PedidoCidadeCobranca'].touched"
+                      class="error-msg">
+                      <div
+                        [hidden]="!formGroup.controls['PedidoCidadeCobranca'].errors"
+                        class="text-danger"><small>Campo obrigatório
+                        </small></div>
+                    </div>
+                  </kendo-textbox-container>
+                  <kendo-textbox-container class='m-2 w-25'
+                    floatingLabel="Uf:">
+                    <input kendoTextBox kendoTooltip
+                      formControlName="PedidoUFCobranca" [title]="" />
+                    <div
+                      *ngIf="formGroup.controls['PedidoUFCobranca'].errors
+                      &&
+                      formGroup.controls['PedidoUFCobranca'].touched"
+                      class="error-msg">
+                      <div
+                        [hidden]="!formGroup.controls['PedidoUFCobranca'].errors"
+                        class="text-danger"><small>Campo obrigatório
+                        </small></div>
+                    </div>
+                  </kendo-textbox-container>
+                </div>
+              </div>
+            </form>
+          </div>
+        </ng-template>
+      </kendo-tabstrip-tab>
+    </kendo-tabstrip>
+  </div>
+  <div class="d-flex flex-column col-md-8"
+    *ngIf="!formGroup.controls['ClienteId'].errors">
+    <form [formGroup]="formGroup">
+      <div class="d-flex flex-row align-items-center">
+        <div class="d-flex flex-column mb-3">
+          <small>Tabela de Preço: </small>
+          <kendo-dropdownlist
+            formControlName="TabelaPrecoId"
+            [loading]="loading"
+            [defaultItem]="{TabelaPrecoId: '',
+            TabelaPrecoDescricao: 'Selecione'}"
+            [valuePrimitive]="true"
+            [data]="tabelaPrecos"
+            [valuePrimitive]="true"
+            [textField]="'TabelaPrecoDescricao'"
+            (valueChange)='changeTabelaPreco($event)'
+            [valueField]="'TabelaPrecoId'"
+            [ngClass]="{'k-state-invalid':
+            formGroup.controls['TabelaPrecoId'].pristine &&
+            formGroup.controls['TabelaPrecoId'].errors }"
+            kendoTooltip [title]="">
+          </kendo-dropdownlist>
+          <div
+            *ngIf="formGroup.controls['TabelaPrecoId'].errors
+            && formGroup.controls['TabelaPrecoId'].pristine"
+            class="error-msg">
+            <div
+              [hidden]="!formGroup.controls['TabelaPrecoId'].errors"
+              class="text-danger"><small>Defina
+                a tabela de Preço</small></div>
+          </div>
+        </div>
+
+        <div class="mx-2">
+          <button kendoButton (click)="openSearchProduto()" [icon]="'search'"></button>
+        </div>
+      </div>
+
+      <incca-pedido-item-grid
+        (sendforPedido)="sendforPedido($event)"
+        (updatePedido)="updatePedido($event)"
+        [pedidoId]="pedidoId"
+        [pedidoItem]="pedidoItem"
+        [tabelaPrecoId]="tabelaPreco"
+        [isNewPedido]="isNew"
+        [tipoPedido]="tipoPedido">
+      </incca-pedido-item-grid>
+
+      <div class="d-flex flex-row justify-content-end align-items-center">
+        <div class="d-flex flex-row align-items-center mt-2">
+          <div>
+            <kendo-textbox-container class=""
+              floatingLabel="% de
+              desconto">
+              <input kendoTextBox kendoTooltip maxlength="9"
+                mask="percent" suffix="%"
+                step='0.01' min="0" max="99.99"
+                type="text"
+                (change)="focusOutDesconto($event.target.value)"
+                formControlName="PedidoDesconto" [title]="" />
+              <div *ngIf="formGroup.controls['PedidoDesconto'].errors
+                && formGroup.controls['PedidoDesconto'].dirty"
+                class="error-msg">
+                <div
+                  [hidden]="!formGroup.controls['PedidoDesconto'].errors"
+                  class="text-danger">
+                  <small>Somente Números </small>
+                </div>
+              </div>
+            </kendo-textbox-container>
+            <!-- <kendo-textbox-container class="mx-2"
+              floatingLabel="Valor do desconto">
+              <input kendoTextBox kendoTooltip maxlength="9" currencyMask
+                [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }"
+                formControlName="PedidoDescontoValor" [title]="" />
+              <div *ngIf="formGroup.controls['PedidoDescontoValor'].errors
+                && formGroup.controls['PedidoDescontoValor'].dirty"
+                class="error-msg">
+                <div
+                  [hidden]="!formGroup.controls['PedidoDescontoValor'].errors"
+                  class="text-danger">
+                  <small>Somente Números </small>
+                </div>
+              </div>
+            </kendo-textbox-container> -->
+          </div>
+          <div class='d-flex flex-column border border-primary rounded mx-2'>
+            <div class="d-flex flex-row px-4">
+              <div class="d-flex flex-column mx-2">
+                <small>Valor total:</small>
+                <div class="d-flex flex-column justify-content-center">
+                  <h3>{{totalPedido | currency :'BRL'}}</h3>
+                  <h6 class="d-flex text-danger justify-content-center"
+                    *ngIf="formGroup.get('PedidoDesconto').value> 0 ">
+                    - {{formGroup.get('PedidoDescontoValor').value | currency :
+                    'BRL'}}
+                  </h6>
+                </div>
+              </div>
+              <div class="d-flex flex-column"
+                *ngIf="formGroup.get('PedidoDesconto').value> 0 ">
+                <small>Total com desconto: </small>
+                <h3>{{ totalPedido - formGroup.get('PedidoDescontoValor').value
+                  | currency :'BRL'}}</h3>
+              </div>
+            </div>
+            <button kendoButton (click)="opem()"
+              [disabled]="formGroup.invalid" [primary]="true">Finalizar Pedido</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<div class="bg-white text-dark">
+  <div class="row d-flex justify-content-between mx-3">
+    <div>
+      <div *ngIf="pedidoId === ''; else
+        title">
+        <p class="text-muted mt-3">
+          *Selecione a Tabela de preço para incluir os produtos
+        </p>
+      </div>
+      <ng-template #title>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+
+<kendo-window top="100" left="350" title="Finalizar o pedido"
+  *ngIf="openedFinalPedido"
+  (close)="close()" [minWidth]="300" [width]="600" [height]="500">
+  <div class="d-flex align-items-center justify-content-center">
+    <form [formGroup]="formGroup">
+      <div class="d-flex flex-row justify-content-between p-2">
+        <div class="d-flex flex-column align-items-center">
+          <div class="my-3">
+            <h5>Pagamento</h5>
+          </div>
+          <div class="d-flex flex-column m-2">
+            <small>Tipo de cobrança: </small>
+            <kendo-dropdownlist
+              formControlName="TipoCobrancaId"
+              [defaultItem]="{TipoCobrancaId:'',
+              TipoCobrancaDescricao:' Selecione...'}"
+              [valuePrimitive]="true"
+              [ngClass]="{'k-state-invalid':
+              formGroup.controls['TipoCobrancaId'].pristine &&
+              formGroup.controls['TipoCobrancaId'].errors }"
+              [data]="tipobrancaList"
+              [valuePrimitive]="true"
+              [loading]="loading"
+              [textField]="'TipoCobrancaDescricao'"
+              [valueField]="'TipoCobrancaId'"
+              kendoTooltip [title]="">
+            </kendo-dropdownlist>
+            <div *ngIf="formGroup.controls['TipoCobrancaId'].errors
+              &&
+              formGroup.controls['TipoCobrancaId'].pristine"
+              class="error-msg
+              d-flex flex-row">
+              <div
+                [hidden]="!formGroup.controls['TipoCobrancaId'].errors"
+                class="text-danger">
+                <small>Defina o tipo de cobrança</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex flex-column m-2">
+            <small>Condição de pagamento: </small>
+            <kendo-dropdownlist
+              [defaultItem]="{CondicaoPagamentoId: '',
+              CondicaoPagamentoDescricao: 'Selecione...'}"
+              formControlName="CondicaoPagamentoId"
+              [ngClass]="{'k-state-invalid':
+              formGroup.controls['CondicaoPagamentoId'].pristine &&
+              formGroup.controls['CondicaoPagamentoId'].errors }"
+              [valuePrimitive]="true"
+              [data]="condicaoPagamentoList"
+              [valuePrimitive]="true"
+              [loading]="loading"
+              [textField]="'CondicaoPagamentoDescricao'"
+              [valueField]="'CondicaoPagamentoId'"
+              kendoTooltip [title]="">
+            </kendo-dropdownlist>
+            <div
+              *ngIf="formGroup.controls['CondicaoPagamentoId'].errors
+              &&
+              formGroup.controls['CondicaoPagamentoId'].pristine"
+              class="error-msg
+              d-flex flex-row">
+              <div
+                [hidden]="!formGroup.controls['CondicaoPagamentoId'].errors"
+                class="text-danger">
+                <small>Defina a Condição de pagamento</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex m-2 flex-column">
+            <small>Tipo de Frete: </small>
+            <kendo-dropdownlist
+              [defaultItem]="{PedidoTipoEntrega: '', descricao:
+              'Selecione...'}"
+              formControlName="PedidoTipoEntrega"
+              [valuePrimitive]="true"
+              [data]="tipoEntregaList"
+              [valuePrimitive]="true"
+              [loading]="loading"
+              [textField]="'descricao'"
+              [valueField]="'PedidoTipoEntrega'"
+              kendoTooltip [title]="">
+            </kendo-dropdownlist>
+          </div>
+
+          <div class="d-flex m-2 flex-column">
+            <small>Tipo do Pedido: </small>
+            <kendo-dropdownlist
+              formControlName="PedidoTipoPedido"
+              [valuePrimitive]="true"
+              [data]="tipoPedidoList"
+              [valuePrimitive]="true"
+              [loading]="loading"
+              [textField]="'descricao'"
+              [valueField]="'PedidoTipoPedido'"
+              kendoTooltip [title]="">
+            </kendo-dropdownlist>
+          </div>
+
+        </div>
+        <div class="d-flex flex-column align-items-center">
+          <div class="my-3">
+            <h5>Configuração de frete</h5>
+          </div>
+
+          <kendo-textbox-container class='m-2'
+            floatingLabel="Valor do Frete:">
+            <input kendoTextBox kendoTooltip
+              formControlName="PedidoValorFrete" [title]="" />
+            <div
+              *ngIf="formGroup.controls['PedidoValorFrete'].errors
+              &&
+              formGroup.controls['PedidoValorFrete'].touched"
+              class="error-msg">
+              <div
+                [hidden]="!formGroup.controls['PedidoValorFrete'].errors"
+                class="text-danger"><small>Campo obrigatório </small></div>
+            </div>
+          </kendo-textbox-container>
+
+          <kendo-textbox-container class='m-2 '
+            floatingLabel="Peso do Frete :">
+            <input kendoTextBox kendoTooltip
+              formControlName="PedidoPesoFrete" [title]="" />
+            <div
+              *ngIf="formGroup.controls['PedidoPesoFrete'].errors
+              &&
+              formGroup.controls['PedidoPesoFrete'].touched"
+              class="error-msg">
+              <div
+                [hidden]="!formGroup.controls['PedidoPesoFrete'].errors"
+                class="text-danger"><small>Campo obrigatório </small></div>
+            </div>
+          </kendo-textbox-container>
+          <div *ngIf="tipoComissao !== '1'">
+            <kendo-textbox-container class='m-2 '
+              floatingLabel="Senha do Vendedor:">
+              <input kendoTextBox kendoTooltip [title]="'Senha do Vendedor'"
+                type="password"
+                [ngClass]="{'k-state-invalid':PedidoSenhaVendedor .errors }"
+                [formControl]="PedidoSenhaVendedor" />
+              <div
+                *ngIf="PedidoSenhaVendedor.errors"
+                class="error-msg">
+                <div
+                  [hidden]="!PedidoSenhaVendedor.errors"
+                  class="text-danger"><small>Necessário senha do Vendedor</small></div>
+              </div>
+            </kendo-textbox-container>
+          </div>
+          <div class='d-flex flex-column border border-primary rounded my-2
+            mx-2'>
+            <div class="d-flex flex-row px-4">
+              <div class="d-flex flex-column mx-2">
+                <small>Valor total:</small>
+                <div class="d-flex flex-column justify-content-center">
+                  <h3>{{totalPedido | currency :'BRL'}}</h3>
+                  <h6 class="d-flex text-danger justify-content-center"
+                    *ngIf="formGroup.get('PedidoDesconto').value> 0 ">
+                    - {{formGroup.get('PedidoDescontoValor').value | currency :
+                    'BRL'}}
+                  </h6>
+                </div>
+              </div>
+              <div class="d-flex flex-column"
+                *ngIf="formGroup.get('PedidoDesconto').value> 0 ">
+                <small>Total com desconto: </small>
+                <h3>{{ totalPedido - formGroup.get('PedidoDescontoValor').value
+                  | currency :'BRL'}}</h3>
+              </div>
+            </div>
+            <div class="d-flex flex-column">
+              <button *ngIf="tipoComissao === '1'" class="mt-2" kendoButton
+                (click)="salvarDados(1)"
+                [disabled]="formGroup.invalid" [primary]="true">Finalizar pedido
+              </button>
+              <button *ngIf="tipoComissao === '2'" class="mt-2" kendoButton
+                (click)="salvarDados(2)"
+                [disabled]="formGroup.invalid || PedidoSenhaVendedor.invalid"
+                [primary]="true">Finalizar pedido
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+</kendo-window>

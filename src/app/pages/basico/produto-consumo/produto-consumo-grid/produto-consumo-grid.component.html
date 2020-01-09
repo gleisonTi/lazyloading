@@ -1,0 +1,214 @@
+<kendo-grid
+  [data]="view | async"
+  (edit)="editHandler($event)"
+  (cancel)="cancelHandler($event)"
+  (save)="saveHandler($event)"
+  (remove)="removeHandler($event)"
+  (add)="addHandler($event)"
+  [pageSize]="gridState.take" [skip]="gridState.skip" [sort]="gridState.sort"
+  [pageable]="true" [sortable]="true"
+  (dataStateChange)="onStateChange($event)"
+  [height]="400">
+  <ng-template kendoGridToolbarTemplate>
+    <button kendoGridAddCommand>Novo Consumo</button>
+  </ng-template>
+  <kendo-grid-column field="ComponenteId" title="Componente" width="200">
+    <ng-template kendoGridCellTemplate let-dataItem>
+      {{getNameComponente(dataItem)}}
+    </ng-template>
+    <ng-template
+      kendoGridEditTemplate
+      let-dataItem="dataItem"
+      let-formGroup="formGroup">
+      <div class="row d-flex justify-content-center">
+        <div>
+          <kendo-dropdownlist
+            #ddl="popupAnchor"
+            popupAnchor
+            [data]="dataComponente"
+            [filterable]="true"
+            (filterChange)="handleComponenteFilter($event)"
+            textField="ComponenteDescricao"
+            valueField="ComponenteId"
+            [valuePrimitive]="true"
+            [defaultItem]="{
+            ComponenteId: null,
+            ComponenteDescricao: 'Escolha uma Componente'
+            }"
+            [formControl]="formGroup.get('ComponenteId')">
+          </kendo-dropdownlist>
+          <kendo-popup
+            [anchor]="ddl.element"
+            *ngIf="formGroup.get('ComponenteId').invalid &&
+            !(isNew && formGroup.get('ComponenteId').untouched)"
+            popupClass="k-widget
+            k-tooltip k-tooltip-validation k-invalid-msg">
+            <span class="k-icon k-i-warning"></span>
+            Escolha um componente
+          </kendo-popup>
+        </div>
+        <!-- <div class="mt-1">
+    <button kendoButton [icon]="'add'" [look]="'flat'"></button>
+  </div> -->
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-column field="ProdutoConsumoProdutoId" title="Produto de Consumo"
+    width="200">
+    <ng-template kendoGridCellTemplate let-dataItem>
+      {{getNameProduto(dataItem)}}
+    </ng-template>
+    <ng-template
+      kendoGridEditTemplate
+      let-dataItem="dataItem"
+      let-formGroup="formGroup">
+      <div class="row d-flex justify-content-center">
+        <div>
+          <kendo-dropdownlist
+            #ddl="popupAnchor"
+            popupAnchor
+            [filterable]="true"
+            (filterChange)="handleProdutoFilter($event)"
+            [data]="dataProduto"
+            textField="ProdutoDescricao"
+            valueField="ProdutoId"
+            [valuePrimitive]="true"
+            [defaultItem]="{
+            ProdutoId:null,
+            ProdutoDescricao: 'Escolha uma Produto'
+            }"
+            [formControl]="formGroup.get('ProdutoConsumoProdutoId')">
+          </kendo-dropdownlist>
+          <kendo-popup
+            [anchor]="ddl.element"
+            *ngIf="formGroup.get('ProdutoConsumoProdutoId').invalid &&
+            !(isNew && formGroup.get('ProdutoConsumoProdutoId').untouched)"
+            popupClass="k-widget
+            k-tooltip k-tooltip-validation k-invalid-msg">
+            <span class="k-icon k-i-warning"></span>
+            Escolha um Produto
+          </kendo-popup>
+        </div>
+        <!-- <div class="mt-1">
+        <button kendoButton [icon]="'add'" [look]="'flat'"></button>
+      </div> -->
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+  <!--
+<kendo-grid-column field="UnidadeId" title="Unidade" width="200">
+  <ng-template kendoGridCellTemplate let-dataItem>
+    {{getNameUnidade(dataItem)}}
+  </ng-template>
+  <ng-template
+    kendoGridEditTemplate
+    let-dataItem="dataItem"
+    let-formGroup="formGroup">
+    <div class="row d-flex justify-content-center">
+      <div>
+        <kendo-dropdownlist
+          #ddl="popupAnchor"
+          popupAnchor
+          [filterable]="true"
+          (filterChange)="handleUnidadeFilter($event)"
+          [data]="dataUnidade"
+          textField="UnidadeDescricao"
+          valueField="UnidadeId"
+          [valuePrimitive]="true"
+          [defaultItem]="{
+            UnidadeId:null,
+            UnidadeDescricao: 'Escolha uma Unidade'
+          }"
+          [formControl]="formGroup.get('UnidadeId')">
+        </kendo-dropdownlist>
+        <kendo-popup
+          [anchor]="ddl.element"
+          *ngIf="formGroup.get('UnidadeId').invalid &&
+          !(isNew && formGroup.get('UnidadeId').untouched)"
+          popupClass="k-widget
+          k-tooltip k-tooltip-validation k-invalid-msg">
+          <span class="k-icon k-i-warning"></span>
+          Escolha uma unidade
+        </kendo-popup>
+      </div>
+       <div class="mt-1">
+        <button kendoButton [icon]="'add'" [look]="'flat'"></button>
+      </div>
+    </div>
+  </ng-template>
+</kendo-grid-column> -->
+  <kendo-grid-column field="SetorId" title="Setor" width="200">
+    <ng-template kendoGridCellTemplate let-dataItem>
+      {{ getNameSetor(dataItem)}}
+    </ng-template>
+    <ng-template
+      kendoGridEditTemplate
+      let-dataItem="dataItem"
+      let-formGroup="formGroup">
+      <div class="row d-flex justify-content-center">
+        <div>
+          <kendo-dropdownlist
+            #ddl="popupAnchor"
+            popupAnchor
+            [data]="dataSetor"
+            [filterable]="true"
+            (filterChange)="handleSetorFilter($event)"
+            textField="SetorDescricao"
+            valueField="SetorId"
+            [valuePrimitive]="true"
+            [defaultItem]="{
+            SetorId: null,
+            SetorDescricao: 'Escolha uma Setor'
+            }"
+            [formControl]="formGroup.get('SetorId')">
+          </kendo-dropdownlist>
+          <kendo-popup
+            [anchor]="ddl.element"
+            *ngIf="formGroup.get('SetorId').invalid &&
+            !(isNew && formGroup.get('SetorId').untouched)" popupClass="k-widget
+            k-tooltip k-tooltip-validation k-invalid-msg">
+            <span class="k-icon k-i-warning"></span>
+            Escolha um Setor
+          </kendo-popup>
+        </div>
+        <!-- <div class="mt-1">
+        <button kendoButton [icon]="'add'" [look]="'flat'"></button>
+      </div> -->
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-column
+    field="ProdutoConsumoQuantidade"
+    title="Quantidade"
+    width="150"
+    editor="text">
+    <ng-template
+      kendoGridEditTemplate
+      let-column="column"
+      let-formGroup="formGroup"
+      let-isNew="isNew"
+      let-dataItem="dataItem">
+      <input
+        #input
+        type="number"
+        class="k-textbox"
+        [formControl]="formGroup.get('ProdutoConsumoQuantidade')"
+        />
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-command-column title="Opções" width="220">
+    <ng-template kendoGridCellTemplate let-isNew="isNew">
+      <button kendoGridEditCommand [primary]="true">Editar</button>
+      <button kendoGridRemoveCommand>Remover</button>
+      <button kendoGridSaveCommand [disabled]="formGroup?.invalid">
+        {{ isNew ? "Adicionar" : "Atualizar" }}
+      </button>
+      <button kendoGridCancelCommand>
+        {{ isNew ? "Descartar" : "Cancelar" }}
+      </button>
+    </ng-template>
+  </kendo-grid-command-column>
+</kendo-grid>

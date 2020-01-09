@@ -1,0 +1,122 @@
+<!-- <h3>{{getHelp("Variacao","Tela").helpTexto}}</h3> -->
+<kendo-grid
+  tourAnchor="start"
+  [data]="view | async"
+  [loading]="loading"
+  (edit)="editHandler($event)"
+  (cancel)="cancelHandler($event)"
+  (save)="saveHandler($event)"
+  (remove)="removeHandler($event)"
+  (add)="addHandler($event)"
+  [pageSize]="gridState.take" [skip]="gridState.skip" [sort]="gridState.sort"
+  [pageable]="true" [sortable]="true"
+  (dataStateChange)="onStateChange($event)"
+  filterable="menu"
+  [resizable]="true"
+  [height]="600">
+  <kendo-grid-messages noRecords="Nenhum registro encontrado." filterFilterButton= "Filtrar"
+    filterClearButton="Limpar" filterContainsOperator="Contém">
+</kendo-grid-messages>
+  <ng-template kendoGridToolbarTemplate>
+    <div class="row d-flex mx-3 justify-content-between">
+      <div kendoTooltip position="right">
+        <button kendoGridAddCommand title="Novo Tipo de
+          Variacao">Novo </button>
+      </div>
+      <a kendoTooltip position="left"
+        tooltipWidth="400"
+        [title]="getHelp('Variacao','Tela')?.helpTexto" class="nav-link"><i
+          class="icon-info"></i></a>
+    </div>
+    <!-- <button style="cursor: pointer" (click)="initTour()" class="btn btn-primary
+        ml-2" tourAnchor="start">Tutorial </button> -->
+  </ng-template>
+  <div *ngFor="let col of columns">
+    <kendo-grid-column
+      *ngIf="col.field != 'VariacaoDescricao' && col.field !=
+      'VariacaoOrdemTela'"
+      [field]="col.field"
+      [title]="col.title" editor="boolean" [filterable]="false"
+      width="90">
+      <ng-template kendoGridHeaderTemplate let-column
+        let-columnIndex="columnIndex">
+        <span kendoTooltip [title]="getHelp(col.field,'Atributo')?.helpTexto">{{col.title}}</span>
+      </ng-template>
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <label class="k-form-field right">
+          <input
+            type="checkbox"
+            id="checkOnClick"
+            class="k-checkbox"
+            [checked]="getValueCheckBox(dataItem,col.field)"
+            />
+          <label class="k-checkbox-label" for="checkChildren"></label>
+        </label>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      *ngIf="col.field === 'VariacaoDescricao' || col.field ===
+      'VariacaoOrdemTela'"
+      [filterable]="col.field !== 'VariacaoDescricao'? false : true "
+      [field]="col.field"
+      [title]="col.title"
+      width="150"
+      editor="text">
+      <ng-template kendoGridFilterMenuTemplate let-filter let-column="column" let-filterService="filterService">
+          <incca-input-filter
+              [filter]="filter"
+              valueField="VariacaoDescricao">
+          </incca-input-filter>
+      </ng-template>
+      <ng-template kendoGridHeaderTemplate let-column
+        let-columnIndex="columnIndex">
+        <span kendoTooltip [title]="getHelp(col.field,'Atributo')?.helpTexto">{{col.title}}</span>
+      </ng-template>
+      <ng-template
+        kendoGridEditTemplate
+        let-column="col"
+        let-formGroup="formGroup"
+        let-isNew="isNew"
+        let-dataItem="dataItem">
+        <input
+          #input
+          class="k-textbox"
+          [formControl]="formGroup.get(col.field)"
+          />
+        <kendo-popup
+          [anchor]="input"
+          *ngIf="formGroup.get(col.field).invalid &&
+          !(isNew && formGroup.get(col.field).untouched)" popupClass="k-widget
+          k-tooltip k-tooltip-validation k-invalid-msg">
+          <span class="k-icon k-i-warning"></span>
+          Necessário o nome da descrição
+        </kendo-popup>
+      </ng-template>
+    </kendo-grid-column>
+  </div>
+  <div *kendoGridDetailTemplate="let dataItem">
+    <incca-sub-variacao-grid
+      [variacaoIdPai]="dataItem.VariacaoId"
+      [hasColecao]="dataItem.VariacaoColecao"
+      [hasFabricacao]="dataItem.VariacaoFabricante"
+      [hasConsumo]="dataItem.VariacaoConsumo"
+      [DescricaoPai]="dataItem.VariacaoDescricao">
+    </incca-sub-variacao-grid>
+  </div>
+  <kendo-grid-command-column title="Opções" width="220">
+    <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+      <button kendoGridEditCommand [primary]="true">Editar</button>
+      <button kendoGridRemoveCommand>Remover</button>
+      <button kendoGridSaveCommand [disabled]="formGroup?.invalid">
+        {{ isNew ? "Adicionar" : "Atualizar" }}
+      </button>
+      <button kendoGridCancelCommand>
+        {{ isNew ? "Descartar" : "Cancelar" }}
+      </button>
+      <i kendoTooltip *ngIf="!isNew" class="icon-user ml-2" title="Usuário:
+        {{dataItem.VariacaoUsuario}} Data: {{dataItem.VariacaoData |
+        date:'short'}}"></i>
+    </ng-template>
+  </kendo-grid-command-column>
+</kendo-grid>
+<tour-step-template></tour-step-template>

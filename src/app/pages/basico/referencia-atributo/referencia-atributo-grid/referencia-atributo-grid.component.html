@@ -1,0 +1,58 @@
+
+  <kendo-tabstrip >
+      <div *ngFor="let atributo of dataAtributo ; let i = index">
+    <kendo-tabstrip-tab title="{{atributo.AtributoDescricao}}"  [selected]="i === 0 ? true : false">
+      <ng-template kendoTabContent >
+          <incca-choose-atributo [referenciaId]="referenciaId" [atributoId]="atributo.AtributoId" [atributoNome]="atributo.AtributoDescricao"></incca-choose-atributo>      </ng-template>
+    </kendo-tabstrip-tab>
+  </div>
+  </kendo-tabstrip>
+
+
+
+<!-- <kendo-grid
+  [data]="dataAtributo"
+  [height]="500"
+  [loading]='loading'
+  (cellClick)="cellClickHandler($event)"
+  (cellClose)="cellCloseHandler($event)"
+  (edit)="editHandler($event)"
+  (cancel)="cancelHandler($event)"
+  (save)="saveHandler($event)"
+  (remove)="removeHandler($event)"
+  (add)="addHandler($event)"
+  [pageSize]="gridState.take" [skip]="gridState.skip" [sort]="gridState.sort"
+  [filter]="gridState.filter"
+  [pageable]="true" [sortable]="true"
+  (dataStateChange)="onStateChange($event)">
+  <ng-template kendoGridToolbarTemplate>
+    <div class="row d-flex mx-3 justify-content-between">
+      <div kendoTooltip position="right" class='d-flex '>
+        <h5 class="mx-2 mt-2">Cadastro de atributos da referência</h5>
+      </div>
+      <a kendoTooltip position="left"
+        tooltipWidth="400"
+        [title]="getHelp('ReferenciaAtributo','Tela')?.helpTexto"
+        class="nav-link"><i
+          class="icon-info"></i></a>
+    </div>
+  </ng-template>
+  <kendo-grid-column field="AtributoId" title="Variação" width="300">
+
+        <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="k-grid-ignore-click">
+                {{ dataItem.AtributoDescricao }}
+            </div>
+        </ng-template>
+        <ng-template kendoGridEditTemplate  let-dataItem="dataItem">
+            {{ dataItem.AtributoDescricao }}
+          </ng-template>
+    <ng-template kendoGridCellTemplate let-dataItem>
+      <div class="k-grid-ignore-click">  </div>
+    </ng-template>
+  </kendo-grid-column>
+
+  <ng-template kendoGridDetailTemplate let-dataItem >
+    <incca-choose-atributo [referenciaId]="referenciaId" [atributoId]="dataItem.AtributoId"></incca-choose-atributo>
+  </ng-template >
+</kendo-grid> -->

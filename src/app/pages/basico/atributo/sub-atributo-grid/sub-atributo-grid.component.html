@@ -1,0 +1,179 @@
+<kendo-grid
+  [data]="view | async"
+  [height]="600"
+  [loading]="loading"
+  (edit)="editHandler($event)"
+  (cancel)="cancelHandler($event)"
+  (save)="saveHandler($event)"
+  (remove)="removeHandler($event)"
+  (add)="addHandler($event)"
+  [pageSize]="gridState.take"
+  [skip]="gridState.skip"
+  [sort]="gridState.sort"
+  [filter]="gridState.filter"
+  filterable="menu"
+  [resizable]="true"
+  [pageable]="true"
+  [sortable]="true"
+  (dataStateChange)="onStateChange($event)"
+>
+  <kendo-grid-messages
+    noRecords="Nenhum registro encontrado."
+    filterFilterButton="Filtrar"
+    filterClearButton="Limpar"
+    filterContainsOperator="Contém"
+  >
+  </kendo-grid-messages>
+  <ng-template kendoGridToolbarTemplate>
+    <div class="row d-flex mx-3 justify-content-between">
+      <div kendoTooltip position="right">
+        <button kendoGridAddCommand title="Novo Atributo">Novo</button>
+      </div>
+      <a
+        kendoTooltip
+        position="left"
+        tooltipWidth="400"
+        [title]="getHelp('Atributo', 'Tela')?.helpTexto"
+        class="nav-link"
+        ><i class="icon-info"></i
+      ></a>
+    </div>
+  </ng-template>
+  <kendo-grid-column field="AtributoDescricao" title="Descrição">
+    <ng-template
+      kendoGridFilterMenuTemplate
+      let-filter
+      let-column="column"
+      let-filterService="filterService"
+    >
+      <incca-input-filter [filter]="filter" valueField="AtributoDescricao">
+      </incca-input-filter>
+    </ng-template>
+    <ng-template
+      kendoGridHeaderTemplate
+      let-column
+      let-columnIndex="columnIndex"
+    >
+      <span
+        kendoTooltip
+        [title]="getHelp(column.field, 'Atributo')?.helpTexto"
+        >{{ column.title }}</span
+      >
+    </ng-template>
+    <ng-template kendoGridEditTemplate let-column let-columnIndex="columnIndex">
+      <input
+        #ddl="popupAnchor"
+        popupAnchor
+        kendoTextBox
+        [formControl]="formGroup.get('AtributoDescricao')"
+      />
+      <kendo-popup
+        [anchor]="ddl.element"
+        *ngIf="formGroup.get('AtributoDescricao').invalid 
+        &&!(isNew && formGroup.get('AtributoDescricao').untouched)"
+        popupClass="k-widget k-tooltip k-tooltip-validation k-invalid-msg">
+        <span class="k-icon k-i-warning"></span>
+        Descrição e Obrigatória.
+      </kendo-popup>
+    </ng-template>
+  </kendo-grid-column>
+  <kendo-grid-column field="AtributoOrdem" title="Ordem" [filterable]="false">
+    <ng-template
+      kendoGridHeaderTemplate
+      let-column
+      let-columnIndex="columnIndex"
+    >
+      <span
+        kendoTooltip
+        [title]="getHelp(column.field, 'Atributo')?.helpTexto"
+        >{{ column.title }}</span
+      >
+    </ng-template>
+    <ng-template kendoGridEditTemplate let-column let-columnIndex="columnIndex">
+      <input
+        #ddl="popupAnchor"
+        popupAnchor
+        kendoTextBox
+        type="number"
+        [formControl]="formGroup.get('AtributoOrdem')"
+      />
+      <kendo-popup
+        [anchor]="ddl.element"
+        *ngIf="
+          formGroup.get('AtributoOrdem').invalid &&
+          !(isNew && formGroup.get('AtributoOrdem').untouched)
+        "
+        popupClass="k-widget
+          k-tooltip k-tooltip-validation k-invalid-msg"
+      >
+        <span class="k-icon k-i-warning"></span>
+        Ordem deve ser superior a {{ maxOrdem }}
+      </kendo-popup>
+    </ng-template>
+  </kendo-grid-column>
+  <kendo-grid-column field="AtributoTexto" title="Observação" width="400">
+    <ng-template
+      kendoGridFilterMenuTemplate
+      let-filter
+      let-column="column"
+      let-filterService="filterService"
+    >
+      <incca-input-filter [filter]="filter" valueField="AtributoTexto">
+      </incca-input-filter>
+    </ng-template>
+    <ng-template
+      kendoGridHeaderTemplate
+      let-column
+      let-columnIndex="columnIndex"
+    >
+      <span
+        kendoTooltip
+        [title]="getHelp(column.field, 'Atributo')?.helpTexto"
+        >{{ column.title }}</span
+      >
+    </ng-template>
+  </kendo-grid-column>
+
+  <!-- <ng-template kendoGridDetailTemplate let-dataItem>
+    <div *ngIf="!editText; else editor">
+      <div class="d-flex justify-content-start align-itens-center my-2">
+        <h5 class="text-primary">{{dataItem.AtributoDescricao}}</h5>
+      </div>
+      <div [innerHTML]='dataItem.AtributoTexto'></div>
+    </div>
+    <ng-template #editor>
+      <kendo-textbox-container class="w-100"floatingLabel="Observação">
+        <textarea [formControl]="formGroup.get('AtributoTexto')"
+        placeholder="Observação sobre o atributo"
+          kendoTextArea>
+        </textarea>
+      </kendo-textbox-container>
+    </ng-template>
+  </ng-template> -->
+  <kendo-grid-command-column title="Opções" width="250">
+    <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+      <div *ngIf="!dataItem.AtributoPadrao; else default">
+        <button kendoGridEditCommand [primary]="true">Editar</button>
+        <button kendoGridRemoveCommand>Apagar</button>
+        <button kendoGridSaveCommand [disabled]="formGroup?.invalid">
+          {{ isNew ? "Adicionar" : "Atualizar" }}
+        </button>
+        <button kendoGridCancelCommand>
+          {{ isNew ? "Cancelar" : "Cancelar" }}
+        </button>
+        <i
+          kendoTooltip
+          *ngIf="!isNew"
+          class="icon-user ml-2"
+          title="Usuário:
+        {{ dataItem.AtributoUsuario }} Data: {{
+            dataItem.AtributoData | date: 'short'
+          }}"
+        ></i>
+      </div>
+      <ng-template #default>
+        Atributo padrão do sistema
+      </ng-template>
+    </ng-template>
+  </kendo-grid-command-column>
+</kendo-grid>

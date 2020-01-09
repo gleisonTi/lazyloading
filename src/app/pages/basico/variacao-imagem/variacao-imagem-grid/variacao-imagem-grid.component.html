@@ -1,0 +1,119 @@
+<kendo-grid
+  [data]="view | async"
+  [height]="600"
+  [loading]="loading"
+  (edit)="editHandler($event)"
+  (cancel)="cancelHandler($event)"
+  (save)="saveHandler($event)"
+  (remove)="removeHandler($event)"
+  (add)="addHandler($event)"
+  [pageSize]="gridState.take" [skip]="gridState.skip" [sort]="gridState.sort"
+  [filter]="gridState.filter"
+  [pageable]="true" [sortable]="true"
+  (dataStateChange)="onStateChange($event)">
+  <ng-template kendoGridToolbarTemplate>
+    <div class="row d-flex mx-3 justify-content-between">
+      <div kendoTooltip position="right">
+        <button kendoGridAddCommand title="Nova Imagem">Novo </button>
+      </div>
+      <a kendoTooltip position="left"
+        tooltipWidth="400"
+        [title]="getHelp('Colecao','Tela')?.helpTexto" class="nav-link"><i
+          class="icon-info"></i></a>
+    </div>
+  </ng-template>
+
+  <kendo-grid-column field="VariacaoImagemFoto" title="Imagem">
+    <ng-template kendoGridHeaderTemplate let-column
+      let-columnIndex="columnIndex">
+      <span kendoTooltip [title]="getHelp(column.field,'Atributo')?.helpTexto">{{column.title}}</span>
+    </ng-template>
+
+    <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="d-flex flex-column justify-content-center align-items-center"  >
+            <div class="m-3">
+                <img class="img-thumbnail" src="{{baseUrl}}{{dataItem.VariacaoImagemFoto}}" height="100" width="100">
+              </div>
+        </div>
+    </ng-template>
+
+    <ng-template
+      kendoGridEditTemplate
+      let-formGroup="formGroup"
+      let-isNew="isNew">
+      <div class="d-flex justify-content-center align-items-center">
+        <div class="d-flex flex-column justify-content-center align-items-center"  >
+            <div class="m-3">
+                <img class="img-thumbnail" [src]="geturlImagem()" height="100" width="100">
+              </div>
+              <div class="m-3  w-50 " >
+                  <div class="custom-file" id="customFile" lang="pt">
+                      <input type="file" class="custom-file-input" (change)="getImageEvent($event.target.files)"  aria-describedby="fileHelp">
+                      <label class="custom-file-label" for="exampleInputFile">
+                        {{nameImage}}
+                      </label>
+                  </div>
+              </div>
+        </div>
+      </div>
+      <kendo-popup
+        [anchor]="input"
+        *ngIf="formGroup.get('VariacaoImagemFoto').invalid &&
+        !(isNew && formGroup.get('VariacaoImagemFoto').untouched)"
+        popupClass="k-widget
+        k-tooltip k-tooltip-validation k-invalid-msg">
+        <span class="k-icon k-i-warning"></span>
+        Necessário o nome da descrição
+      </kendo-popup>
+
+    </ng-template>
+
+  </kendo-grid-column>
+
+  <kendo-grid-column field="VariacaoImagemOrdem" title="Ordem">
+    <ng-template kendoGridHeaderTemplate let-column
+      let-columnIndex="columnIndex">
+      <span kendoTooltip [title]="getHelp(column.field,'Atributo')?.helpTexto">{{column.title}}</span>
+    </ng-template>
+    <ng-template
+      kendoGridEditTemplate
+      let-column
+      let-formGroup="formGroup"
+      let-isNew="isNew"
+      let-dataItem="dataItem">
+      <input
+        #input
+        class="k-textbox"
+        [formControl]="formGroup.get('VariacaoImagemOrdem')"
+        />
+      <kendo-popup
+        [anchor]="input"
+        *ngIf="formGroup.get('VariacaoImagemOrdem').invalid &&
+        !(isNew && formGroup.get('VariacaoImagemOrdem').untouched)"
+        popupClass="k-widget
+        k-tooltip k-tooltip-validation k-invalid-msg">
+        <span class="k-icon k-i-warning"></span>
+        Somente Números
+      </kendo-popup>
+
+    </ng-template>
+
+  </kendo-grid-column>
+
+  <kendo-grid-command-column title="Opções" width="220">
+    <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+      <button kendoGridEditCommand [primary]="true">Editar</button>
+      <button kendoGridRemoveCommand>Apagar</button>
+      <button kendoGridSaveCommand [disabled]="formGroup?.invalid">{{ isNew ?
+        'Adicionar' : 'Atualizar' }}</button>
+      <button kendoGridCancelCommand>{{ isNew ? 'Cancelar' : 'Cancelar' }}</button>
+      <i kendoTooltip *ngIf="!isNew" class="icon-user ml-2" title="Usuário:
+        {{dataItem.VariacaoImagemUsuario}} Data: {{dataItem.VariacaoImagemData |
+        date:'short'}} "></i>
+    </ng-template>
+  </kendo-grid-command-column>
+</kendo-grid>
+<kendo-window title="Selecione uma Imagem" *ngIf="openedImagem"
+  (close)="close()" [minWidth]="300" [width]="800" [height]="500">
+  <incca-imagem (sendUrlImage)="getImageChild($event)"></incca-imagem>
+</kendo-window>

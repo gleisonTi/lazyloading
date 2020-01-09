@@ -1,0 +1,307 @@
+
+
+<kendo-grid
+  [data]="view | async"
+  [height]="470"
+  [loading]="loading"
+  (edit)="editHandler($event)"
+  (cancel)="cancelHandler($event)"
+  (save)="saveHandler($event)"
+  (remove)="removeHandler($event)"
+  (add)="addHandler($event)"
+  [pageSize]="gridState.take" [skip]="gridState.skip" [sort]="gridState.sort"
+  [filter]="gridState.filter"
+  filterable="menu"
+  [resizable]="true"
+  [pageable]="true" [sortable]="true"
+  (dataStateChange)="onStateChange($event)">
+  <kendo-grid-messages noRecords="Nenhum item adicionado."
+    filterFilterButton="Filtrar"
+    filterClearButton="Limpar" filterContainsOperator="Contém">
+  </kendo-grid-messages>
+  <kendo-grid-command-column title="Opções">
+    <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+      <button kendoGridEditCommand [primary]="true" [icon]="'edit'"></button>
+      <button kendoGridRemoveCommand [icon]="'trash'"></button>
+      <button kendoGridSaveCommand [icon]="'check'"
+        [disabled]="formGroup?.invalid"></button>
+      <button kendoGridCancelCommand [icon]="'close'"></button>
+    </ng-template>
+  </kendo-grid-command-column>
+
+  <kendo-grid-command-column title="Imagem" width="100">
+    <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+      <div class="d-flex flex-row justify-content-center" style="margin-top:
+        -8px; margin-left: -12px; margin-right: -12px;">
+        <img src="{{getImageUrl(dataItem)}}"
+          alt="" width="60" height="60">
+      </div>
+
+    </ng-template>
+  </kendo-grid-command-column>
+  <!--p -->
+  <!-- <kendo-grid-column field="PedidoItemItem" title="Item" [filterable]="false" [sortable]="false">
+    <ng-template kendoGridHeaderTemplate let-column
+      let-columnIndex="columnIndex">
+      <span kendoTooltip [title]="getHelp(column.field,'Atributo')?.helpTexto">{{column.title}}</span>
+    </ng-template>
+  </kendo-grid-column> -->
+  <kendo-grid-column field="PedidoItemProdutoDescricao" title="Descrição"
+    [editable]="false">
+    <ng-template kendoGridFilterMenuTemplate let-filter let-column="column"
+      let-filterService="filterService">
+      <incca-input-filter
+        [filter]="filter"
+        valueField="PedidoItemProdutoDescricao">
+      </incca-input-filter>
+    </ng-template>
+    <ng-template kendoGridHeaderTemplate let-column
+      let-columnIndex="columnIndex">
+      <span kendoTooltip [title]="getHelp(column.field,'Atributo')?.helpTexto">{{column.title}}</span>
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-column field="PedidoQuantidade" title="Quantidade"
+    [filterable]="false" [sortable]="false">
+    <ng-template kendoGridEditTemplate let-isNew="isNew"
+      let-dataItem="dataItem">
+      <input type="number" min="1" step="1" kendoTextBox kendoTooltip
+        maxlength="9" [title]=""
+        pattern="\d+"
+        [formControl]="formGroup.get('Quantidade')" [title]=""
+        (ngModelChange)="changeQuantidade(dataItem,$event)"
+        />
+    </ng-template>
+  </kendo-grid-column>
+
+  <!-- <kendo-grid-column field="PedidoItemComissao" title="Comissão"
+    [filterable]="false"
+    [sortable]="false">
+    <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+      {{dataItem.PedidoItemComissao / 100 | percent}}
+    </ng-template>
+    <ng-template kendoGridEditTemplate let-isNew="isNew"
+      let-dataItem="dataItem">
+      <input type="number" min="1" kendoTextBox kendoTooltip
+        maxlength="9" [title]=""
+        (ngModelChange)="focusOutComissao($event)"
+        [formControl]="formGroup.get('ComissaoItem')" [title]="" />
+    </ng-template>
+  </kendo-grid-column> -->
+  <kendo-grid-column field="PedidoItemPercentualDesconto" title="% Desconto"
+    [filterable]="false" [sortable]="false">
+    <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+      <div class="d-flex flex-row align-items-center">
+        <span> {{dataItem.PedidoItemPercentualDesconto / 100 | percent}}</span>
+        <small *ngIf="dataItem.PedidoItemValorDesconto> 0"
+          class="text-danger mx-2">
+          - {{dataItem.PedidoItemValorDesconto |currency:'BRL' }}
+        </small>
+      </div>
+
+
+    </ng-template>
+    <ng-template kendoGridEditTemplate let-isNew="isNew"
+      let-dataItem="dataItem">
+      <input kendoTextBox kendoTooltip
+        mask="percent" suffix="%"
+        maxlength="9"
+        step='0.01' min="0.00" max="99.99"
+        type="text" min="0"
+        maxlength="9" [title]=""
+        (ngModelChange)="changeDescontoItem(dataItem,$event)"
+        [formControl]="formGroup.get('PedidoItemPercentualDesconto')" [title]=""
+        />
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-column field="PedidoProdutoPreco" title="Preço Unitario"
+    [filterable]="false" [sortable]="false">
+    <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+      {{dataItem.ProdutoPrecoUnitario | currency :'BRL'}}
+      {{dataItem.PedidoProdutoPreco | currency :'BRL' }}
+    </ng-template>
+    <ng-template kendoGridEditTemplate let-isNew="isNew"
+      let-dataItem="dataItem">
+      {{dataItem.ProdutoPrecoUnitario | currency :'BRL'}}
+      {{dataItem.PedidoProdutoPreco | currency :'BRL' }}
+    </ng-template>
+  </kendo-grid-column>
+  <kendo-grid-column field="PedidoItemPreco" title="Preço Total"
+    [filterable]="false" [sortable]="false">
+    <ng-template kendoGridHeaderTemplate let-column
+      let-columnIndex="columnIndex">
+      <span kendoTooltip [title]="getHelp(column.field,'Atributo')?.helpTexto">{{column.title}}</span>
+    </ng-template>
+    <ng-template kendoGridEditTemplate let-isNew="isNew"
+      let-dataItem="dataItem">
+      {{formGroup.controls['PedidoItemPreco'].value | currency:'BRL'}}
+    </ng-template>
+    <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+      {{dataItem.PedidoItemPreco | currency:'BRL'}}
+    </ng-template>
+  </kendo-grid-column>
+</kendo-grid>
+
+<!-- <kendo-window top="-40" left="5" title="Selecione o Produto Produto"
+  *ngIf="openedCadProduto"
+  (close)="close()" [minWidth]="300" [width]="600" [height]="700">
+  <incca-pedido-item-search
+    (sendItensPedidoItens)="percorreArrayProduto($event)"
+    (sendProduto)="getProdutoSearch($event)"
+    (setProdutoId)="getProdutosChild($event)"
+    [produtoItensSearch]='produtoItensSearch'
+    [tabelaPrecoId]="tabelaPrecoId">
+  </incca-pedido-item-search>
+</kendo-window>
+
+<ng-template kendoGridToolbarTemplate>
+  <form [formGroup]="formGroup">
+    <div class="row d-flex mx-2 justify-content-between">
+      <div class="w-75" kendoTooltip position="right">
+        <div class="d-flex flex-row align-items-center">
+          <div class="mx-2">
+            <kendo-textbox-container floatingLabel="Produto">
+              <input kendoTextBox kendoTooltip [title]=""
+                formControlName="ProdutoCodigo"
+                (focusout)="focusOutFunction($event.target.value)" />
+              <div *ngIf="formGroup.controls['ProdutoCodigo'].errors &&
+                formGroup.controls['ProdutoCodigo'].dirty" class="error-msg">
+                <div [hidden]="!formGroup.controls['ProdutoCodigo'].errors"
+                  class="text-danger">
+                  <small>Campo Obrigatório e Somente Números </small>
+                </div>
+              </div>
+            </kendo-textbox-container>
+          </div>
+        >
+          <div class="mx-2 mt-3" *ngIf="findProduto">
+            <div class="d-flex flex-column">
+              <small>Produto</small>
+              <h4>{{produto?.ProdutoDescricao}}</h4>
+            </div>
+          </div>
+
+          <div class="d-flex w-100 h-100 mx-2 mt-3
+            align-items-center" *ngIf="loading else searchProduto">
+            <div class="k-i-loading" style="font-size: 30px;color:
+              #8a8989;">
+            </div>
+          </div>
+          <ng-template #searchProduto>
+            <div class="mx-2 mt-3" *ngIf="activeSearch && !findProduto &&
+              formGroup.get('ProdutoCodigo').value !== ''">
+              <div class="d-flex flex-column">
+                <h4>Produto não encontrado</h4>
+              </div>
+            </div>
+          </ng-template>
+
+        </div>
+      </div>
+      <a kendoTooltip position="left"
+        tooltipWidth="400"
+        [title]="getHelp('PedidoItem','Tela')?.helpTexto" class="nav-link"><i
+          class="icon-info"></i></a>
+    </div>
+    <div *ngIf="findProduto">
+      <div class="row d-flex mx-3">
+        <div class="d-flex flex-column">
+          <small>Embalagem: </small>
+          <kendo-dropdownlist
+            formControlName="PedidoItemEmbalagemId"
+            [defaultItem]="{EmbalagemId:'',
+            EmbalagemDescricao: 'Selecione'}"
+            [valuePrimitive]="true"
+            [data]="dropEmbalagemList"
+            [ngClass]="{'k-state-invalid':
+            formGroup.controls['PedidoItemEmbalagemId'].pristine &&
+            formGroup.controls['PedidoItemEmbalagemId'].errors }"
+            [valuePrimitive]="true"
+            [textField]="'EmbalagemDescricao'"
+            [valueField]="'EmbalagemId'"
+            kendoTooltip [title]="">
+          </kendo-dropdownlist>
+          <div
+            *ngIf="formGroup.get('PedidoItemEmbalagemId').hasError('required')"
+            class="error-msg">
+            <div
+              [hidden]="!formGroup.controls['PedidoItemEmbalagemId'].invalid"
+              class="text-danger">
+              <small>Selecione uma embalagem</small>
+            </div>
+          </div>
+        </div>
+        <div class="mx-2">
+          <kendo-textbox-container floatingLabel="Quantidade">
+            <input type="number" min="1" kendoTextBox kendoTooltip
+              maxlength="9" [title]=""
+              formControlName="Quantidade"
+              (ngModelChange)="changeQuantidade($event)"
+              />
+            <div *ngIf="formGroup.controls['Quantidade'].errors &&
+              formGroup.controls['Quantidade'].dirty" class="error-msg">
+              <div [hidden]="!formGroup.controls['Quantidade'].errors"
+                class="text-danger">
+                <small>Campo Obrigatório e Somente Números </small>
+              </div>
+            </div>
+          </kendo-textbox-container>
+        </div>
+        <div class="mx-2 d-flex flex-column">
+          <small>Preço unitário</small>
+          <input currencyMask kendoTextBox kendoTooltip [title]=""
+            formControlName="ProdutoPrecoUnitario"
+            (ngModelChange)="changePrecoUnitario($event)"
+            [options]="{align: 'left', prefix: 'R$ ', thousands: '.', decimal:
+            ','}" />
+          <div *ngIf="formGroup.controls['ProdutoPrecoUnitario'].errors &&
+            formGroup.controls['ProdutoPrecoUnitario'].dirty"
+            class="error-msg">
+            <div [hidden]="!formGroup.controls['ProdutoPrecoUnitario'].errors"
+              class="text-danger">
+              <small>Campo Obrigatório e Somente Números </small>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex flex-column mx-2 mt-2"
+          *ngIf="this.formGroup.get('PedidoItemValorDesconto').value !== 0">
+          <small>Desconto:</small>
+          <h5 class="text-danger">-
+            {{formGroup.get('PedidoItemValorDesconto').value | currency
+            :'BRL'}}</h5>
+        </div>
+        <div class="d-flex flex-column mx-2 mt-2">
+          <small>Valor total por item:</small>
+          <h3>{{formGroup.get('PedidoItemPreco').value | currency :'BRL'}}</h3>
+        </div>
+
+        <div class="d-flex flex-column mt-4"
+          *ngIf="this.formGroup.get('PedidoItemPercentualDesconto').value !==
+          0">
+          <p class="text-danger">-
+            {{formGroup.get('PedidoItemPercentualDesconto').value / 100 |
+            percent}}</p>
+        </div>
+      </div>
+      <div class="d-flex flex-row mx-3">
+        <div class="w-50">
+          <kendo-textbox-container floatingLabel="Observação 1" class="w-100">
+            <input kendoTextBox kendoTooltip [title]=""
+              formControlName="PedidoItemObs" />
+          </kendo-textbox-container>
+        </div>
+        <div class="mx-2 w-50">
+          <kendo-textbox-container floatingLabel="Observação 2" class="w-100">
+            <input kendoTextBox kendoTooltip [title]=""
+              formControlName="PedidoItemObs1" />
+          </kendo-textbox-container>
+        </div>
+        <div class="mx-2 mt-3">
+          <button kendoButton (click)="savePedido(formGroup, true)"
+            [primary]=true [icon]="'add'">Adicionar Produto</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</ng-template> -->

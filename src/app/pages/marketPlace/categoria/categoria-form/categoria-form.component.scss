@@ -1,0 +1,33 @@
+incca-categoria-form{
+
+    .k-editor .k-content{ //Como o texteditor foi reduzido o height para 150px, esta área também precisa ser reduzida para evitar margem em baixo,
+        max-height: 150px;
+    }
+
+    .custom-file-label::after { //Faz com que o botão "Pesquisar" apareça, mesmo com o pai visibility: hidden
+        position: initial;
+        visibility: initial;
+        width: 100px;
+        content: "Procurar";
+        border-left: initial;
+        text-align: center;
+    }
+
+    .custom-file{ //Define a largura do botão "Pesquisar" para a mesma largura da imagem
+        width: 115px;
+    }
+
+    .custom-file-label{ //Esconde o label que aparece o nome da foto
+        visibility: hidden;
+        padding-left: 0;
+    }
+
+    .img-thumbnail{ //Evita que as fotos fiquem uma maior que as outras, desproporcionando as colunas, percebi que a propriedade height quando colocada diretamente na imagem nao tem efeito.
+        height: 85px;
+    }
+
+    .custom-file-input{ //Retira o min-width definido pela biblioteca, para que tenha o mesmo tamanho que o definido no botão "Pesquisar"
+        min-width: initial!important;
+    }
+
+}

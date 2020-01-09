@@ -1,0 +1,55 @@
+<kendo-dialog title="Alteração de senha do usuário administrador" *ngIf="opened" [minWidth]="500" [width]="500">
+    
+    <div class="text-center">
+        <p class="m-3">
+            Bem vindo ao Incca Web!
+        </p>
+
+        <p class="m-3">Defina uma nova senha para o usuário <strong>administrador</strong></p>
+    </div>
+
+    <form [formGroup]="primeiroAcessoForm" (ngSubmit)="onSubmit()">
+
+        <div class="container-fluid">
+
+            <div class="row">
+
+                <div class="col-md-6">
+                    <input formControlName="UsuarioSenha" kendoTextBox type="password" placeholder="Senha"
+                    [ngClass]="{'k-state-invalid':
+                    f.UsuarioSenha.pristine &&
+                    f.UsuarioSenha.errors &&
+                    submitted}"
+                    />
+
+                </div>
+
+                <div class="col-md-6">
+                    <input formControlName="UsuarioConfirmacaoSenha" kendoTextBox type="password" placeholder="Confirmação de senha" 
+                    [ngClass]="{'k-state-invalid':
+                    f.UsuarioConfirmacaoSenha.pristine &&
+                    f.UsuarioConfirmacaoSenha.errors &&
+                    submitted}"
+                    />
+                </div>
+
+                <div 
+                *ngIf="f.UsuarioSenha.value !== f.UsuarioConfirmacaoSenha.value
+                && submitted"
+                class="col-md-12 mt-3 animated fadeIn">
+                    <p class="text-danger">* Senha e confirmação de senha devem ser iguais</p>
+                </div>
+
+                <div class="col-md-12 mt-3">
+                    <button type="submit" class="float-right w-25" [primary]="true" kendoButton>Alterar</button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+<div *ngIf="loading === true" class="k-i-loading"></div>
+    
+</kendo-dialog>

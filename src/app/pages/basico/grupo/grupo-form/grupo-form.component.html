@@ -1,0 +1,228 @@
+<div class="bg-white text-dark">
+  <div class="row d-flex justify-content-between mx-3">
+    <div>
+      <div *ngIf="grupoId === ''; else title">
+        <p class="text-muted mt-3">
+          *Necessário Cadastro Geral e Fiscal do produto para liberar os
+          cadastros adicionais
+        </p>
+      </div>
+      <ng-template #title>
+        <h5 class="mt-3">{{formGroup.value.GrupoDescricao}}</h5>
+      </ng-template>
+    </div>
+    <div class="row d-flex justify-content-end">
+      <div class="d-flex flex-row">
+        <div class="d-flex w-100 h-100 mx-2 justify-content-center
+          align-items-center" *ngIf="loading else saveResponse">
+          <div class="k-i-loading mr-2" style="font-size: 30px;color:
+            #8a8989;">
+          </div>
+        </div>
+        <ng-template #saveResponse>
+          <div *ngIf="created">
+            <h5 class="text-success mt-2 mx-3">Grupo salvo com sucesso</h5>
+          </div>
+        </ng-template>
+        <div class='m-2'>
+          <button kendoButton (click)="salvarDados()"
+            [disabled]="formGroup.invalid" [primary]="true">Salvar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<kendo-tabstrip tabPosition="left">
+  <kendo-tabstrip-tab [title]="'Geral'" [selected]="true">
+    <ng-template kendoTabContent>
+      <div class=' w-100'>
+        <form [formGroup]="formGroup">
+          <div class="row d-flex justify-content-center my-2">
+            <h5>Cadastro Geral do Grupo</h5>
+          </div>
+          <div class="d-flex justify-content-center mx-3">
+            <div *ngIf="formGroup.invalid" class="error-msg">
+              <div *ngIf="formGroup.invalid" class="text-danger"><small>*Os
+                  Campos em destaque são obrigatórios</small></div>
+            </div>
+          </div>
+          <div class="d-flex flex-column m-2">
+
+            <small>Grupo Raiz:</small>
+
+            <div class="d-flex flex-row align-items-center">
+
+              <kendo-dropdownlist
+                formControlName="GrupoIdPai"
+                [defaultItem]="{ GrupoDescricao: 'Sem Grupo Raiz ', value:'' }"
+                [valuePrimitive]="true"
+                [data]="grupoList"
+                [filterable]="true"
+                [ngClass]="{'k-state-invalid':
+                formGroup.controls['GrupoId'].pristine &&
+                formGroup.controls['GrupoId'].errors }"
+                [loading]="loading"
+                [valuePrimitive]="true"
+                [textField]="'GrupoDescricao'"
+                [valueField]="'GrupoId'"
+                (filterChange)="handleFilterGrupo($event)"
+                kendoTooltip [title]="">
+              </kendo-dropdownlist>
+              <a kendoTooltip position="right"
+                tooltipWidth="400"
+                title="Define qual grupo o mesmo faz parte."
+                class="nav-link"><i
+                  class="icon-info"> </i></a>
+            </div>
+          </div>
+
+          <kendo-textbox-container class='m-2' floatingLabel="Descrição">
+            <input kendoTextBox kendoTooltip
+            [ngClass]="{'k-state-invalid':
+            formGroup.controls['GrupoDescricao'].pristine &&
+            formGroup.controls['GrupoDescricao'].errors }"
+              formControlName="GrupoDescricao" [title]="" />
+            <div *ngIf="formGroup.controls['GrupoDescricao'].errors &&
+              formGroup.controls['GrupoDescricao'].pristine" class="error-msg">
+              <div
+                [hidden]="!formGroup.controls['GrupoDescricao'].errors"
+                class="text-danger"><small>Campo Obrigatório</small></div>
+            </div>
+          </kendo-textbox-container>
+          <kendo-textbox-container class='m-2' floatingLabel="Codigo">
+            <input kendoTextBox kendoTooltip
+            [ngClass]="{'k-state-invalid':
+            formGroup.controls['GrupoCodigo'].pristine &&
+            formGroup.controls['GrupoCodigo'].errors }"
+              formControlName="GrupoCodigo" [title]="" />
+            <div *ngIf="formGroup.controls['GrupoCodigo'].errors &&
+              formGroup.controls['GrupoCodigo'].pristine" class="error-msg">
+              <div
+                [hidden]="!formGroup.controls['GrupoCodigo'].errors"
+                class="text-danger"><small>Campo Obrigatório</small></div>
+            </div>
+          </kendo-textbox-container>
+          <kendo-textbox-container class='m-2' floatingLabel="NCM">
+            <input kendoTextBox kendoTooltip
+            [ngClass]="{'k-state-invalid':
+            formGroup.controls['GrupoNCM'].pristine &&
+            formGroup.controls['GrupoNCM'].errors }"
+              formControlName="GrupoNCM" maxlength="8" [title]="" />
+            <div *ngIf="formGroup.controls['GrupoNCM'].errors &&
+              formGroup.controls['GrupoNCM'].pristine"class="error-msg">
+              <div
+                [hidden]="formGroup.controls['GrupoNCM'].touched"
+                class="text-danger"><small>Campo deve Conter 8 digitos</small></div>
+              <div
+                [hidden]="!formGroup.controls['GrupoNCM'].errors"
+                class="text-danger"><small>Campo Obrigatório</small></div>
+            </div>
+          </kendo-textbox-container>
+          <kendo-textbox-container class='m-2' floatingLabel="Peso Bruto">
+            <input kendoTextBox kendoTooltip suffix=" KG" mask="dot_separator.2"
+              formControlName="GrupoPesoBruto" maxlength="8" [title]="" />
+            <div *ngIf="formGroup.controls['GrupoPesoBruto'].errors &&
+              formGroup.controls['GrupoPesoBruto'].dirty" class="error-msg">
+              <div
+                [hidden]="!formGroup.controls['GrupoPesoBruto'].errors"
+                class="text-danger"><small>Somente Números</small></div>
+            </div>
+          </kendo-textbox-container>
+
+          <kendo-textbox-container class='m-2' floatingLabel="Peso Liquido">
+            <input kendoTextBox kendoTooltip suffix=" KG" mask="dot_separator.2"
+              formControlName="GrupoPesoLiquido" [title]="" />
+            <div *ngIf="formGroup.controls['GrupoPesoLiquido'].errors &&
+              formGroup.controls['GrupoPesoLiquido'].dirty" class="error-msg">
+              <div
+                [hidden]="!formGroup.controls['GrupoPesoLiquido'].errors"
+                class="text-danger"><small>Somente Números</small></div>
+            </div>
+          </kendo-textbox-container>
+
+          <kendo-textbox-container class='m-2' floatingLabel="Sequencial">
+            <input kendoTextBox kendoTooltip
+              formControlName="GrupoSequencialProduto" maxlength="4" [title]=""
+              />
+            <div *ngIf="formGroup.controls['GrupoSequencialProduto'].errors &&
+              formGroup.controls['GrupoSequencialProduto'].dirty"
+              class="error-msg">
+              <div
+                [hidden]="!formGroup.controls['GrupoSequencialProduto'].errors"
+                class="text-danger"><small>Somente Números</small></div>
+            </div>
+          </kendo-textbox-container>
+
+          <kendo-textbox-container class='m-2' floatingLabel="Seguimento">
+            <input kendoTextBox kendoTooltip
+              formControlName="GrupoSegmento" maxlength="8" [title]="" />
+            <div *ngIf="formGroup.controls['GrupoSegmento'].errors &&
+              formGroup.controls['GrupoSegmento'].dirty" class="error-msg">
+              <div
+                [hidden]="!formGroup.controls['GrupoSegmento'].errors"
+                class="text-danger"><small>Somente Números</small></div>
+            </div>
+          </kendo-textbox-container>
+
+          <kendo-textbox-container class='m-2' floatingLabel="Classe">
+            <input kendoTextBox kendoTooltip
+              formControlName="GrupoClasse" maxlength="8" [title]="" />
+            <div *ngIf="formGroup.controls['GrupoClasse'].errors &&
+              formGroup.controls['GrupoClasse'].dirty" class="error-msg">
+              <div
+                [hidden]="!formGroup.controls['GrupoClasse'].errors"
+                class="text-danger"><small>Somente Números</small></div>
+            </div>
+          </kendo-textbox-container>
+
+          <kendo-textbox-container class='m-2' floatingLabel="SubClasse">
+            <input kendoTextBox kendoTooltip
+              formControlName="GrupoSubClasse" maxlength="8" [title]="" />
+            <div *ngIf="formGroup.controls['GrupoSubClasse'].errors &&
+              formGroup.controls['GrupoSubClasse'].dirty" class="error-msg">
+              <div
+                [hidden]="!formGroup.controls['GrupoSubClasse'].errors"
+                class="text-danger"><small>Somente Números</small></div>
+            </div>
+          </kendo-textbox-container>
+
+          <div class="d-flex flex-row">
+            <kendo-textbox-container class='m-2' floatingLabel="Família">
+              <input kendoTextBox kendoTooltip
+                formControlName="GrupoFamilia" maxlength="8" [title]="" />
+              <div *ngIf="formGroup.controls['GrupoFamilia'].errors &&
+                formGroup.controls['GrupoFamilia'].dirty" class="error-msg">
+                <div
+                  [hidden]="!formGroup.controls['GrupoFamilia'].errors"
+                  class="text-danger"><small>Somente Números</small></div>
+              </div>
+            </kendo-textbox-container>
+
+            <div class="col">
+              <p>Aparece Consumo</p>
+              <kendo-switch formControlName="GrupoApareceConsumo"></kendo-switch>
+            </div>
+          </div>
+
+
+        </form>
+      </div>
+    </ng-template>
+  </kendo-tabstrip-tab>
+
+  <kendo-tabstrip-tab [title]="'Atributos'" [disabled]="isNew">
+    <ng-template kendoTabContent>
+      <incca-grupo-atributo-grid [grupoId]="grupoId"></incca-grupo-atributo-grid>
+    </ng-template>
+  </kendo-tabstrip-tab>
+
+  <kendo-tabstrip-tab [title]="'Variações'" [disabled]="grupoId === '' ?
+    true : true">
+    <ng-template kendoTabContent>
+      <incca-grupo-variacao-grid [grupoId]="grupoId"></incca-grupo-variacao-grid>
+    </ng-template>
+  </kendo-tabstrip-tab>
+
+</kendo-tabstrip>

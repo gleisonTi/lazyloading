@@ -1,0 +1,95 @@
+  <kendo-grid
+    [data]="view | async"
+    (edit)="editHandler($event)"
+    [loading]="loading"
+    (cancel)="cancelHandler($event)"
+    (save)="saveHandler($event)"
+    (remove)="removeHandler($event)"
+    (add)="addHandler($event)"
+    [pageSize]="gridState.take" [skip]="gridState.skip" [sort]="gridState.sort"
+    [filter]="gridState.filter"
+    [pageable]="true" [sortable]="true"
+    filterable="menu"
+    (dataStateChange)="onStateChange($event)"
+    [height]="500"
+  >
+
+  <kendo-grid-messages noRecords="Nenhum registro encontrado." filterFilterButton= "Filtrar"
+    filterClearButton="Limpar" filterContainsOperator="Contém">
+  </kendo-grid-messages>
+    <ng-template kendoGridToolbarTemplate>
+      <div class="row d-flex mx-3 justify-content-between">
+        <div kendoTooltip position="right">
+          <button kendoGridAddCommand title="Novo Fabricante" >Novo </button>
+          <button [icon]="'file-excel'" kendoGridExcelCommand>Excel</button>
+          <button [icon]="'file-pdf'" kendoGridPDFCommand>PDF</button>
+        </div>
+        <a kendoTooltip position="left"
+          tooltipWidth="400"
+          [title]="getHelp('Fabricante','Tela')?.helpTexto" class="nav-link"><i
+            class="icon-info"></i></a>
+      </div>
+    </ng-template>
+
+    <kendo-grid-column field="FabricanteDescricao" editor="text" title="Descrição" >
+      <ng-template kendoGridFilterMenuTemplate let-filter let-column="column" let-filterService="filterService">
+          <incca-input-filter
+              [filter]="filter"
+              valueField="FabricanteDescricao"
+              >
+          </incca-input-filter>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-excel fileName="Fabricantes.xlsx"></kendo-grid-excel>
+
+    <kendo-grid-pdf fileName="Fabricantes.pdf" [allPages]="true" paperSize="A4"
+    [repeatHeaders]="true" [landscape]="true">
+    <kendo-grid-pdf-margin top="2cm" left="1cm" right="1cm" bottom="2cm"></kendo-grid-pdf-margin>
+    <ng-template kendoGridPDFTemplate let-pageNum="pageNum"
+      let-totalPages="totalPages">
+      <div class="page-template">
+        <div class="header">
+          <div style="float: right" >Page {{ pageNum }} of {{ totalPages }}</div>
+        </div>
+        <div class="footer">
+          Pagina {{ pageNum }} de {{ totalPages }}
+        </div>
+      </div>
+    </ng-template>
+  </kendo-grid-pdf>
+
+
+
+    <kendo-grid-command-column title="Opções" width="300">
+      <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+        <div *ngIf="dataItem.FabricanteId !== '7ccaa4de-c205-4132-afb1-6d798b8dbf38'; else default">
+            <button kendoGridEditCommand [primary]="true">Editar</button>
+            <button kendoGridRemoveCommand>Remover</button>
+            <button kendoGridSaveCommand [disabled]="formGroup?.invalid">
+              {{ isNew ? "Adicionar" : "Atualizar" }}
+            </button>
+            <button kendoGridCancelCommand>
+              {{ isNew ? "Descartar Mudança" : "Cancelar" }}
+            </button>
+            <i kendoTooltip *ngIf="!isNew"  class="icon-user ml-2" [tooltipTemplate]="template" [title]="template"></i>
+
+        </div>
+        <ng-template #default >
+          Padrão do sistema
+        </ng-template>
+        <ng-template #template >
+          <div style="height:50px; width:180px">
+            <strong>Usuário: </strong> {{ dataItem.FabricanteUsuario}}
+            <br>
+            <strong>Data: </strong> {{ dataItem.FabricanteData.toLocaleString() }}
+          </div>
+        </ng-template>
+      </ng-template>
+    </kendo-grid-command-column>
+  </kendo-grid>
+
+
+
+
+
+

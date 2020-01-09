@@ -1,0 +1,84 @@
+<kendo-grid
+  [data]="view | async"
+  [height]="400"
+  [loading]="loading"
+  (edit)="editHandler($event)"
+  (cancel)="cancelHandler($event)"
+  (save)="saveHandler($event)"
+  [resizable]="true"
+  (remove)="removeHandler($event)"
+  (add)="addHandler($event)"
+  [pageSize]="gridState.take"
+  [skip]="gridState.skip"
+  [sort]="gridState.sort"
+  [filter]="gridState.filter"
+  [pageable]="true"
+  [sortable]="true"
+  (dataStateChange)="onStateChange($event)">
+
+  <ng-template kendoGridToolbarTemplate>
+    <div class="row d-flex mx-3 justify-content-between">
+      <div kendoTooltip position="right">
+        <button kendoGridAddCommand title="Nova Categoria">Novo </button>
+      </div>
+      <a kendoTooltip position="left"
+        tooltipWidth="400"
+        [title]="getHelp('CategoriaMktRef','Tela')?.helpTexto"
+        class="nav-link"><i
+          class="icon-info"></i></a>
+    </div>
+
+    <div class="row ml-3">
+        <div *ngFor="let categoria of arvoreSubcategorias; let i = index">
+            {{categoria.CategoriaNome}}
+          <span *ngIf="i+1 !== arvoreSubcategorias.length"> > </span>
+          <i (click)="removeElementoArvore()" *ngIf="i+1 == arvoreSubcategorias.length" class="icon-minus linkArvore"></i>
+        </div>
+      </div>
+
+  </ng-template>
+
+  <kendo-grid-column field="CategoriaId" title="Categoria"
+  width="250">
+  <ng-template kendoGridCellTemplate let-dataItem>
+    {{ getName(dataItem)}}
+  </ng-template>
+    <ng-template
+    kendoGridEditTemplate
+    let-dataItem="dataItem"
+    let-formGroup="formGroup">
+      <div class="row d-flex justify-content-center">
+        <div>
+            <kendo-dropdownlist id="dropCategorias"
+              [defaultItem]="{ CategoriaId: null, CategoriaNome:
+              'Categorias...' }"
+              [valuePrimitive]="true"
+              [data]="categoriaMktList"
+              [filterable]="true"
+              (selectionChange)="alteraArvore($event)"
+              (filterChange)="handleCategoriaFilter($event)"
+              [textField]="'CategoriaNome'"
+              [valueField]="'CategoriaId'"
+              [formControl]="formGroup.get('CategoriaId')"
+              >
+            </kendo-dropdownlist>
+        </div>
+      </div>
+
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-command-column title="Opções" >
+    <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+      <button kendoGridEditCommand [primary]="true">Editar</button>
+      <button kendoGridRemoveCommand>Apagar</button>
+      <button kendoGridSaveCommand [disabled]="formGroup?.invalid">{{ isNew ?
+        'Adicionar' : 'Atualizar' }}</button>
+      <button kendoGridCancelCommand>{{ isNew ? 'Cancelar' : 'Cancelar' }}</button>
+      <i kendoTooltip *ngIf="!isNew" class="icon-user ml-2" title="Usuário:
+        {{dataItem.ReferenciaMktCategoriaUsuario}} Data:
+        {{dataItem.ReferenciaMktCategoriaData |
+        date:'short'}}"></i>
+    </ng-template>
+  </kendo-grid-command-column>
+</kendo-grid>

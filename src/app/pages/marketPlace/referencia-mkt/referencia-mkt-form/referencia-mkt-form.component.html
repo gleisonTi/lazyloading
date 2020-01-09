@@ -1,0 +1,144 @@
+<div class="bg-white text-dark">
+  <div class="row d-flex justify-content-between mx-3">
+    <div>
+      <div *ngIf="ReferenciaMktId !== ' 00000000-0000-0000-0000-000000000000' ">
+        <p class="text-muted mt-3">
+          *Necessário Cadastro Geral de referência para vincular a uma categoria
+        </p>
+      </div>
+    </div>
+    <div class="row d-flex justify-content-end">
+      <div *ngIf="created">
+        <h5 class="text-success mt-1 mx-3">Referência marketplace salva com sucesso</h5>
+      </div>
+      <div class='m-2'>
+        <button kendoButton (click)="salvarDados()" [disabled]="formGroup.invalid" [primary]="true">Salvar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<kendo-tabstrip tabPosition="left">
+  <kendo-tabstrip-tab [title]="'Geral'" [selected]="true">
+    <ng-template kendoTabContent>
+      <form [formGroup]="formGroup">
+        <div class="d-flex flexrow flex-nowrap">
+          <div class="d-flex justify-content-center ml-auto w-50 my-2 p-1">
+            <h5>Cadastro da referência Mercado Livre</h5>
+          </div>
+          <div class="justify-content-center w-25 mt-2 d-flex">
+            <p class="mt-1 mx-1">Inativo</p>
+            <div>
+              <kendo-switch formControlName="ReferenciaMktInativo"></kendo-switch>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="formGroup.invalid" class="error-msg">
+          <div *ngIf="formGroup.touched" class="text-danger"><small>*Os
+              Campos em destaque são obrigatórios</small>
+          </div>
+        </div>
+
+        <div class="d-flex flex-row">
+
+          <div class="d-flex w-25 flex-column p-3">
+
+            <div class="d-flex flex-column">
+              <small>Referências: </small>
+            </div>
+
+            <kendo-dropdownlist (selectionChange)="onchangeReferenciaList($event)" formControlName="ReferenciaId"
+              [defaultItem]="{ ReferenciaDescricaoCompleta: 'Referências...', ReferenciaId:
+                        null }" [valuePrimitive]="true" [data]="referenciaList"
+              [textField]="'ReferenciaDescricaoCompleta'" [valueField]="'ReferenciaId'">
+            </kendo-dropdownlist>
+
+            <div class="d-flex flex-column w-25 mt-3">
+              <small>Mercadoria: </small>
+              <kendo-dropdownlist formControlName="ReferenciaMktTipoMercadoria" [defaultItem]="{ descricao: 'Tipo de mercadoria...', ReferenciaMktTipoMercadoria:
+                                null }" [valuePrimitive]="true" [data]="tipoMercadoriaList" [textField]="'descricao'"
+                [valueField]="'ReferenciaMktTipoMercadoria'">
+              </kendo-dropdownlist>
+
+            </div>
+
+
+          </div>
+
+          <div class="d-flex flex-column w-50 mt-3">
+
+            <kendo-textbox-container class="w-75" floatingLabel="Descrição">
+              <input kendoTextBox kendoTooltip formControlName="ReferenciaMktDescricao" />
+              <div *ngIf="formGroup.controls['ReferenciaMktDescricao'].errors &&
+                              formGroup.controls['ReferenciaMktDescricao'].touched" class="error-msg">
+                <div [hidden]="!formGroup.controls['ReferenciaMktDescricao'].errors.required" class="text-danger">
+                  <small>Campo Obrigatório</small></div>
+              </div>
+            </kendo-textbox-container>
+
+
+            <div class="d-flex flex-row">
+              <div class="d-flex flex-column w-50 mt-3">
+                <small>Disponibilidade: </small>
+                <kendo-dropdownlist formControlName="ReferenciaMktDisponibilidade" [defaultItem]="{ descricao: 'Disponibilidade', ReferenciaMktDisponibilidade:
+                                            null }" [valuePrimitive]="true" [data]="disponibilidadeList"
+                  [textField]="'descricao'" [valueField]="'ReferenciaMktDisponibilidade'">
+                </kendo-dropdownlist>
+              </div>
+
+
+
+              <div class="d-flex flex-column w-50 mt-3 mr-4">
+                <small>Data disponível para compra:</small>
+                <kendo-datepicker format="dd/MM/yyyy" formControlName="ReferenciaMktDataDisponivel"></kendo-datepicker>
+              </div>
+            </div>
+
+
+          </div>
+
+          <div class="d-flex flex-column p-3 ml-2 w-25">
+
+            <div class="d-flex flex-column">
+              <strong class="ml-2">Configurações</strong>
+            </div>
+
+            <div class="d-flex">
+              <label class="k-form-field right p-2">
+                <input type="checkbox" id="ReferenciaMktControlaEstoque" class="k-checkbox"
+                  formControlName="ReferenciaMktControlaEstoque" />
+                <label class="k-checkbox-label" for="ReferenciaMktControlaEstoque">Controla estoque</label>
+              </label>
+            </div>
+
+            <div class="d-flex">
+              <label class="k-form-field right p-2">
+                <input type="checkbox" id="ReferenciaMktSomenteLogado" class="k-checkbox"
+                  formControlName="ReferenciaMktSomenteLogado" />
+                <label class="k-checkbox-label" for="ReferenciaMktSomenteLogado">Compras apenas logado</label>
+              </label>
+            </div>
+
+            <div class="d-flex">
+              <label class="k-form-field right p-2">
+                <input type="checkbox" id="ReferenciaMktFreteGratis" class="k-checkbox"
+                  formControlName="ReferenciaMktFreteGratis" />
+                <label class="k-checkbox-label" for="ReferenciaMktFreteGratis">Frete Grátis</label>
+              </label>
+            </div>
+          </div>
+
+        </div>
+
+      </form>
+    </ng-template>
+  </kendo-tabstrip-tab>
+  <kendo-tabstrip-tab [title]="'Categoria'"
+    [disabled]="formGroup.get('ReferenciaMktId').value == '00000000-0000-0000-0000-000000000000'" [selected]="false">
+    <ng-template kendoTabContent>
+      <incca-referencia-mkt-form-tabstrip-categoria [ReferenciaMktId]="formGroup.get('ReferenciaMktId').value"></incca-referencia-mkt-form-tabstrip-categoria>
+    </ng-template>
+  </kendo-tabstrip-tab>
+
+</kendo-tabstrip>

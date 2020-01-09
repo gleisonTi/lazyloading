@@ -1,0 +1,173 @@
+<kendo-grid
+  [data]="view | async"
+  [height]="400"
+  [loading]="loading"
+  (edit)="editHandler($event)"
+  (cancel)="cancelHandler($event)"
+  (save)="saveHandler($event)"
+  [resizable]="true"
+  (remove)="removeHandler($event)"
+  (add)="addHandler($event)"
+  [pageSize]="gridState.take" [skip]="gridState.skip" [sort]="gridState.sort"
+  [filter]="gridState.filter"
+  [pageable]="true" [sortable]="true"
+  (dataStateChange)="onStateChange($event)">
+  <ng-template kendoGridToolbarTemplate>
+    <div class="row d-flex mx-3 justify-content-between">
+      <div kendoTooltip position="right">
+        <button kendoGridAddCommand title="Novo Cadastro">Novo </button>
+      </div>
+      <a kendoTooltip position="left"
+        tooltipWidth="400"
+        [title]="getHelp('ClienteRepresentante','Tela')?.helpTexto"
+        class="nav-link"><i
+          class="icon-info"></i></a>
+    </div>
+  </ng-template>
+  <kendo-grid-column field="ClienteRepresentanteId" title="Representante"
+    width="140">
+    <ng-template kendoGridHeaderTemplate let-column
+      let-columnIndex="columnIndex">
+      <span kendoTooltip [title]="getHelp(column.field,'Atributo')?.helpTexto">{{column.title}}</span>
+    </ng-template>
+    <ng-template kendoGridCellTemplate let-dataItem>
+      {{ getName(dataItem)}}
+    </ng-template>
+    <ng-template
+      kendoGridEditTemplate
+      let-dataItem="dataItem"
+      let-formGroup="formGroup">
+      <div class="row d-flex justify-content-center">
+        <div>
+          <kendo-dropdownlist
+            #ddl="popupAnchor"
+            popupAnchor
+            [data]="dataCliente"
+            style="width:180px;"
+            [filterable]="true"
+            (filterChange)="handleVariacaoFilter($event)"
+            textField="ClienteNome"
+            valueField="ClienteId"
+            [valuePrimitive]="true"
+            [defaultItem]="{
+            ClienteId: null,
+            ClienteNome: 'Selecione...'
+            }"
+            [formControl]="formGroup.get('RepresentanteId')">
+          </kendo-dropdownlist>
+          <kendo-popup
+            [anchor]="ddl.element"
+            *ngIf="formGroup.get('RepresentanteId').invalid &&
+            !(isNew && formGroup.get('RepresentanteId').untouched)"
+            popupClass="k-widget
+            k-tooltip k-tooltip-validation k-invalid-msg">
+            <span class="k-icon k-i-warning"></span>
+            Escolha um Representante
+          </kendo-popup>
+        </div>
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-column field="ClienteRepresentanteTipo" title="Tipo de
+    Representante"
+    width="140">
+    <ng-template kendoGridHeaderTemplate let-column
+      let-columnIndex="columnIndex">
+      <span kendoTooltip [title]="getHelp(column.field,'Atributo')?.helpTexto">{{column.title}}</span>
+    </ng-template>
+    <ng-template kendoGridCellTemplate let-dataItem>
+      <div *ngIf="dataItem.ClienteRepresentanteTipo === 'rep1'">Representante</div>
+      <div *ngIf="dataItem.ClienteRepresentanteTipo === 'rep2'">Representante 2</div>
+      <div *ngIf="dataItem.ClienteRepresentanteTipo === 'sup'">Supervisor</div>
+      <div *ngIf="dataItem.ClienteRepresentanteTipo === 'gerR'">Gerente Regional</div>
+    </ng-template>
+    <ng-template
+      kendoGridEditTemplate
+      let-dataItem="dataItem"
+      let-formGroup="formGroup">
+      <div class="row d-flex justify-content-center">
+        <div>
+          <kendo-dropdownlist
+            #ddl="popupAnchor"
+            popupAnchor
+            [data]="TipoRepresentanteList"
+            style="width:180px;"
+            textField="descricao"
+            valueField="value"
+            [valuePrimitive]="true"
+            [defaultItem]="{
+            value: null,
+            descricao: 'Escolha um Tipo..'
+            }"
+            [formControl]="formGroup.get('ClienteRepresentanteTipo')">
+          </kendo-dropdownlist>
+          <kendo-popup
+            [anchor]="ddl.element"
+            *ngIf="formGroup.get('ClienteRepresentanteTipo').invalid &&
+            !(isNew && formGroup.get('ClienteRepresentanteTipo').untouched)"
+            popupClass="k-widget
+            k-tooltip k-tooltip-validation k-invalid-msg">
+            <span class="k-icon k-i-warning"></span>
+            Escolha um Tipo de Representante
+          </kendo-popup>
+        </div>
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-column field="ClienteRepresentanteContaDeposito" title="Conta de
+    Deposito"
+    width="120">
+    <ng-template
+      kendoGridEditTemplate
+      let-dataItem="dataItem">
+      <div>
+        <input kendoTextBox kendoTooltip #ddl="popupAnchor" popupAnchor
+          [formControl]="formGroup.get('ClienteRepresentanteContaDeposito')"
+          [title]="" class="w-100"/>
+        <kendo-popup
+          [anchor]="ddl.element"
+          *ngIf="formGroup.get('ClienteRepresentanteContaDeposito').invalid &&
+          !(isNew &&
+          formGroup.get('ClienteRepresentanteContaDeposito').untouched)"
+          popupClass="k-widget
+          k-tooltip k-tooltip-validation k-invalid-msg">
+          <span class="k-icon k-i-warning"></span>
+          Somente Números
+        </kendo-popup>
+      </div>
+    </ng-template></kendo-grid-column>
+
+  <kendo-grid-column field="ClienteRepresentanteComissao" title="Comissão"
+    width="100">
+    <ng-template kendoGridHeaderTemplate let-column
+      let-columnIndex="columnIndex">
+      <span kendoTooltip [title]="getHelp(column.field,'Atributo')?.helpTexto">{{column.title}}</span>
+    </ng-template>
+    <ng-template kendoGridCellTemplate let-dataItem>
+      {{ dataItem.ClienteRepresentanteComissao / 100 | percent}}
+    </ng-template>
+    <ng-template
+      kendoGridEditTemplate
+      let-dataItem="dataItem">
+      <input currencyMask kendoTextBox kendoTooltip [options]="{ prefix: '%',
+        thousands: '.', decimal: ',' }"
+        [formControl]="formGroup.get('ClienteRepresentanteComissao')" [title]=""
+        />
+    </ng-template>
+  </kendo-grid-column>
+  <kendo-grid-command-column title="Opções" width="200">
+    <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+      <button kendoGridEditCommand [primary]="true">Editar</button>
+      <button kendoGridRemoveCommand>Apagar</button>
+      <button kendoGridSaveCommand [disabled]="formGroup?.invalid">{{ isNew ?
+        'Adicionar' : 'Atualizar' }}</button>
+      <button kendoGridCancelCommand>{{ isNew ? 'Cancelar' : 'Cancelar' }}</button>
+      <i kendoTooltip *ngIf="!isNew" class="icon-user ml-2" title="Usuário:
+        {{dataItem.ClienteRepresentanteUsuario}} Data:
+        {{dataItem.ClienteRepresentanteData |
+        date:'short'}}"></i>
+    </ng-template>
+  </kendo-grid-command-column>
+</kendo-grid>

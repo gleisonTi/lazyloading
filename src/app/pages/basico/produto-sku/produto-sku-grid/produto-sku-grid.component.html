@@ -1,0 +1,111 @@
+<kendo-grid [data]="view | async"
+  [height]="400" (edit)="editHandler($event)"
+  (cancel)="cancelHandler($event)"
+  (save)="saveHandler($event)" (remove)="removeHandler($event)"
+  (add)="addHandler($event)" [pageSize]="gridState.take"
+  [skip]="gridState.skip" [sort]="gridState.sort" [filter]="gridState.filter"
+  [pageable]="true" [sortable]="true"
+  (dataStateChange)="onStateChange($event)">
+  <ng-template kendoGridToolbarTemplate>
+    <div class="row d-flex mx-3 justify-content-between">
+      <div kendoTooltip position="right">
+        <button kendoGridAddCommand title="Novo Cadastro">Novo SKU</button>
+      </div>
+      <a kendoTooltip position="left" tooltipWidth="400"
+        [title]="getHelp('ProdutoSku','Tela')?.helpTexto"
+        class="nav-link"><i class="icon-info"></i></a>
+    </div>
+  </ng-template>
+  <kendo-grid-column field="ProdutoSKUTamanhoId" title="Tamanho">
+    <ng-template kendoGridHeaderTemplate let-column
+      let-columnIndex="columnIndex">
+      <span kendoTooltip [title]="getHelp(column.field,'Atributo')?.helpTexto">{{column.title}}</span>
+    </ng-template>
+    <ng-template kendoGridCellTemplate let-dataItem>
+      {{ getName(dataItem)}}
+    </ng-template>
+    <ng-template
+      kendoGridEditTemplate
+      let-column="column"
+      let-formGroup="formGroup"
+      let-isNew="isNew"
+      let-dataItem="dataItem">
+      <div class="row d-flex justify-content-center">
+        <div>
+          <kendo-dropdownlist
+            #ddl="popupAnchor"
+            popupAnchor
+            [data]="dataTamanho"
+            [filterable]="true"
+            (filterChange)="handleTamanhoFilter($event)"
+            textField="Tamanho"
+            valueField="TamanhoId"
+            [valuePrimitive]="true"
+            [defaultItem]="{
+            TamanhoId: null,
+            Tamanho: 'Escolha um Tamanho'
+            }"
+            [formControl]="formGroup.get('ProdutoSKUTamanhoId')">
+          </kendo-dropdownlist>
+          <kendo-popup
+            [anchor]="ddl.element"
+            *ngIf="formGroup.get('ProdutoSKUTamanhoId').invalid &&
+            !(isNew && formGroup.get('ProdutoSKUTamanhoId').untouched)"
+            popupClass="k-widget
+            k-tooltip k-tooltip-validation k-invalid-msg">
+            <span class="k-icon k-i-warning"></span>
+            Escolha um Tamanho
+          </kendo-popup>
+        </div>
+        <div class="mt-1">
+          <button kendoButton [icon]="'add'" [look]="'flat'"></button>
+        </div>
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-column field="ProdutoSKUCodigo" title="Codigo SKU">
+    <ng-template kendoGridHeaderTemplate let-column
+      let-columnIndex="columnIndex">
+      <span kendoTooltip [title]="getHelp(column.field,'Atributo')?.helpTexto">{{column.title}}</span>
+    </ng-template>
+    <ng-template
+      kendoGridEditTemplate
+      let-column="column"
+      let-formGroup="formGroup"
+      let-isNew="isNew"
+      let-dataItem="dataItem">
+      <div class="d-flex w-75 flex-row justify-content-center
+        align-items-center">
+        <input
+          #input
+          class="k-textbox mx-2"
+          [formControl]="formGroup.get('ProdutoSKUCodigo')"
+          />
+        <button kendoButton (click)="GeraCodigoSKU()" [icon]="'custom-format'"></button>
+      </div>
+      <kendo-popup
+        [anchor]="input"
+        *ngIf="formGroup.get('ProdutoSKUCodigo').invalid &&
+        !(isNew && formGroup.get('ProdutoSKUCodigo').untouched)"
+        popupClass="k-widget
+        k-tooltip k-tooltip-validation k-invalid-msg">
+        <span class="k-icon k-i-warning"></span>
+        Necessário o código SKU
+      </kendo-popup>
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-command-column title="Opções" width="300">
+    <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+      <button kendoGridEditCommand [primary]="true">Editar</button>
+      <button kendoGridRemoveCommand>Apagar</button>
+      <button kendoGridSaveCommand [disabled]="formGroup?.invalid">{{ isNew ?
+        'Adicionar' : 'Atualizar' }}</button>
+      <button kendoGridCancelCommand>{{ isNew ? 'Cancelar' : 'Cancelar' }}</button>
+      <i kendoTooltip *ngIf="!isNew" class="icon-user ml-2" title="Usuário:
+        {{dataItem.ProdutoSkuUsuario}} Data: {{dataItem.ProdutoSkuData |
+        date:'short'}}"></i>
+    </ng-template>
+  </kendo-grid-command-column>
+</kendo-grid>

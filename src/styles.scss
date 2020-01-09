@@ -1,0 +1,24 @@
+/* You can add global styles to this file, and also import other style files */
+// Import styles
+@import "~@coreui/coreui/scss/coreui";
+
+
+.app,
+incca-login,
+incca-registrar,
+incca-default-layout,
+app-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.breadcrumb {
+  margin-bottom: 0px ;
+}
+.main .container-fluid {
+  padding: 0 0px;
+}
+
+@import '~ngx-toastr/toastr.css';
+

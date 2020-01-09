@@ -1,0 +1,12 @@
+
+  <kendo-tabstrip >
+      <div *ngFor="let variacao of dataVariacao ; let i = index">
+    <kendo-tabstrip-tab title="{{variacao.VariacaoDescricao}}"  [selected]="i === 0 ? true : false">
+      <ng-template kendoTabContent >
+            <incca-choose-variacao [fabricanteId]="fabricanteId" [colecaoId]="colecaoId" [referenciaId]="referenciaId" [variacaoId]="variacao.VariacaoId"></incca-choose-variacao>
+      </ng-template>
+    </kendo-tabstrip-tab>
+  </div>
+  </kendo-tabstrip>
+
+

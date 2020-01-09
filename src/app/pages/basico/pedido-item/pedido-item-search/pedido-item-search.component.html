@@ -1,0 +1,81 @@
+<kendo-grid
+  [data]="view | async"
+  [height]="580"
+  [loading]="loading"
+  (edit)="editHandler($event)"
+  (cancel)="cancelHandler($event)"
+  (save)="saveHandler($event)"
+  (remove)="removeHandler($event)"
+  (add)="addHandler($event)"
+  [pageSize]="gridState.take" [skip]="gridState.skip" [sort]="gridState.sort"
+  [filter]="gridState.filter"
+  filterable="menu"
+  [selectable]="true"
+  [resizable]="true"
+  [kendoGridSelectBy]="'ProdutoId'"
+  (dblclick)="doubleClickHandler($event)"
+  [pageable]="true" [sortable]="true"
+  (selectedKeysChange)="onSelectedKeysChange($event)"
+  (dataStateChange)="onStateChange($event)">
+  <kendo-grid-messages noRecords="Nenhum registro encontrado."
+    filterFilterButton="Filtrar"
+    filterClearButton="Limpar" filterContainsOperator="Contém">
+  </kendo-grid-messages>
+  <ng-template kendoGridToolbarTemplate>
+    <div class="row d-flex mx-3 justify-content-between">
+      <div kendoTooltip position="right">
+        <div class="d-flex flex-column">
+          <small>Filtrar</small>
+          <kendo-dropdownlist
+            [valuePrimitive]="true"
+            [defaultItem]="{ GrupoDescricao: 'Selecione o grupo',
+            GrupoId: '' }"
+            [data]="grupolist"
+            style="width:260px;"
+            [filterable]="true"
+            [textField]="'GrupoDescricao'"
+            [valueField]="'GrupoId'"
+            (filterChange)="handleFilterGrupo($event)"
+            (valueChange)="changeGrupo($event)"
+            kendoTooltip [title]="">
+          </kendo-dropdownlist>
+        </div>
+      </div>
+      <div class="d-flex justify-content-end">
+        <button kendoButton (click)="sendItens()"
+          [primary]=true [icon]="'add'">Adicionar Produtos</button>
+      </div>
+    </div>
+  </ng-template>
+  <kendo-grid-column field="ProdutoCodigo" title="Codigo" width="120">
+    <ng-template kendoGridFilterMenuTemplate let-filter let-column="column"
+      let-filterService="filterService">
+      <incca-input-filter
+        [filter]="filter"
+        valueField="ProdutoCodigo">
+      </incca-input-filter>
+    </ng-template>
+    <ng-template kendoGridHeaderTemplate let-column
+      let-columnIndex="columnIndex">
+      <span kendoTooltip [title]="getHelp(column.field,'Atributo')?.helpTexto">{{column.title}}</span>
+    </ng-template>
+  </kendo-grid-column>
+  <kendo-grid-column field="ProdutoDescricao" title="Produto">
+    <ng-template kendoGridFilterMenuTemplate let-filter let-column="column"
+      let-filterService="filterService">
+      <incca-input-filter
+        [filter]="filter"
+        valueField="ProdutoDescricao">
+      </incca-input-filter>
+    </ng-template>
+    <ng-template kendoGridHeaderTemplate let-column
+      let-columnIndex="columnIndex">
+      <span kendoTooltip [title]="getHelp(column.field,'Atributo')?.helpTexto">{{column.title}}</span>
+    </ng-template>
+  </kendo-grid-column>
+  <kendo-grid-column title="Preço">
+    <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+      {{dataItem.ProdutoPreco | currency : 'BRL'}}
+    </ng-template>
+  </kendo-grid-column>
+</kendo-grid>

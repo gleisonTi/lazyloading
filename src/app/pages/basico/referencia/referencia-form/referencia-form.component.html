@@ -1,0 +1,209 @@
+<div class="bg-white text-dark">
+  <div class="row d-flex justify-content-between mx-3">
+    <div>
+      <div *ngIf="referenciaId.length === 0; else title">
+        <p class="text-muted mt-3">
+          *Necessário Cadastro geral para liberar os cadastros adicionais
+        </p>
+      </div>
+      <ng-template #title>
+        <h5 class="mt-3">{{formGroup.value.ReferenciaDescricaoCompleta}}</h5>
+      </ng-template>
+    </div>
+    <div class="row d-flex justify-content-end">
+        <div class="d-flex flex-row">
+            <div class="d-flex w-100 h-100 mx-2 justify-content-center
+              align-items-center" *ngIf="loading else saveResponse">
+              <div class="k-i-loading mr-2" style="font-size: 30px;color:
+                #8a8989;">
+              </div>
+            </div>
+            <ng-template #saveResponse>
+              <div *ngIf="created">
+                <h5 class="text-success mt-2 mx-3">Referência salva com sucesso</h5>
+              </div>
+            </ng-template>
+            <div class='m-2'>
+              <button kendoButton (click)="salvarDados()"
+                [disabled]="formGroup.invalid" [primary]="true">Salvar</button>
+            </div>
+        </div>
+    </div>
+  </div>
+  <kendo-tabstrip tabPosition="left">
+    <kendo-tabstrip-tab [title]="'Geral'" [selected]="true">
+      <ng-template kendoTabContent>
+        <div class=' w-100'>
+          <form [formGroup]="formGroup">
+            <div class="row d-flex justify-content-center my-2">
+              <h5>Cadastro Geral da referência</h5>
+            </div>
+            <div class="float-right">
+              <div>
+                <p>Inativo</p>
+                <kendo-switch formControlName="ReferenciaInativo"></kendo-switch>
+              </div>
+            </div>
+            <div class="d-flex justify-content-center mx-3">
+              <div *ngIf="formGroup.invalid" class="error-msg">
+                <div *ngIf="formGroup.pristine" class="text-danger"><small>*Os
+                    Campos em destaque são obrigatórios</small></div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-3 m-2">
+                <small>Unidade: </small>
+                <kendo-dropdownlist
+                  [valuePrimitive]="true"
+                  formControlName="UnidadeId"
+                  [defaultItem]="{ UnidadeDescricao: 'Selecione a Unidade',
+                  UnidadeId: '' }"
+                  [data]="unidadeList"
+                  [filterable]="true"
+                  [loading]="loading"
+                  [ngClass]="{'k-state-invalid':
+                  formGroup.controls['UnidadeId'].pristine && formGroup.controls['UnidadeId'].errors }"
+                  [textField]="'UnidadeDescricao'"
+                  [valueField]="'UnidadeId'"
+                  (filterChange)="handleFilterUnidade($event)"
+                  kendoTooltip [title]="">
+                </kendo-dropdownlist>
+              </div>
+
+              <div class="col-md-3 m-2">
+                <small>Fabricante: </small>
+                <kendo-dropdownlist
+                  formControlName="FabricanteId"
+                  [defaultItem]="{ FabricanteDescricao: 'Selecione o
+                  fabricante', FabricanteId:
+                  '' }"
+                  [valuePrimitive]="true"
+                  [loading]="loading"
+                  [data]="fabricanteList"
+                  [ngClass]="{'k-state-invalid':
+                  formGroup.controls['FabricanteId'].pristine && formGroup.controls['FabricanteId'].errors }"
+                  [filterable]="true"
+                  [textField]="'FabricanteDescricao'"
+                  [valueField]="'FabricanteId'"
+                  (filterChange)="handleFilterFabricante($event)"
+                  kendoTooltip [title]="">
+                </kendo-dropdownlist>
+              </div>
+
+              <div class="col-md-3 m-2">
+                <small>Grupo </small>
+                <kendo-dropdownlist
+                  formControlName="GrupoId"
+                  [defaultItem]="{ GrupoDescricao: 'Selecione o Grupo', GrupoId:'' }"
+                  [valuePrimitive]="true"
+                  [data]="grupoList"
+                  [loading]="loading"
+                  [filterable]="true"
+                  [ngClass]="{'k-state-invalid':
+                  formGroup.controls['GrupoId'].pristine && formGroup.controls['GrupoId'].errors }"
+                  [textField]="'GrupoDescricao'"
+                  [valueField]="'GrupoId'"
+                  (filterChange)="handleFilterGrupo($event)"
+                  (valueChange)="changeGrupo($event)"
+                  kendoTooltip [title]="">
+                </kendo-dropdownlist>
+              </div>
+
+              <div class="col-md-3 m-2">
+                <small>Coleção </small>
+                <kendo-dropdownlist
+                  formControlName="ColecaoId"
+                  [defaultItem]="{ ColecaoDescricao: 'Selecione a Coleção',
+                  ColecaoId: null }"
+                  [valuePrimitive]="true"
+                  [data]="colecaoList"
+                  [filterable]="true"
+                  [loading]="loading"
+                  [ngClass]="{'k-state-invalid':
+                  formGroup.controls['ColecaoId'].pristine && formGroup.controls['ColecaoId'].errors }"
+                  [valuePrimitive]="true"
+                  [textField]="'ColecaoDescricao'"
+                  [valueField]="'ColecaoId'"
+                  (filterChange)="handleFilterColecao($event)"
+                  kendoTooltip [title]="">
+                </kendo-dropdownlist>
+              </div>
+              <div class="col-md-3 m-2 mt-3">
+                <kendo-textbox-container floatingLabel="Codigo da
+                  Referência">
+                  <input kendoTextBox kendoTooltip
+                    formControlName="ReferenciaCodigo"
+                    [ngClass]="{'k-invalid': hasReferenciaCod ||
+                    formGroup.controls['ReferenciaCodigo'].pristine && formGroup.controls['ReferenciaCodigo'].errors }"
+                    (focusout)="focusOutFunction($event.target.value)"
+                    [title]=""
+                    />
+                  <div [hidden]="!hasReferenciaCod" class="text-danger"><small>Código
+                      já utilizado </small></div>
+                </kendo-textbox-container>
+              </div>
+
+              <div class="col-md-3 m-2 mt-3">
+                <kendo-textbox-container floatingLabel="Descrição da
+                  Referência">
+                  <input kendoTextBox kendoTooltip
+                  [ngClass]="{'k-state-invalid':
+                  formGroup.controls['ReferenciaDescricaoCompleta'].pristine && formGroup.controls['ReferenciaDescricaoCompleta'].errors }"
+                    formControlName="ReferenciaDescricaoCompleta" [title]="" />
+                </kendo-textbox-container>
+              </div>
+              <div class="col-md-3 m-2 mt-3">
+                <kendo-textbox-container floatingLabel="Sequencia da
+                  Referência">
+                  <input kendoTextBox kendoTooltip
+                    formControlName="ReferenciaSequencia" [title]="" />
+                </kendo-textbox-container>
+              </div>
+
+            </div>
+          </form>
+        </div>
+      </ng-template>
+    </kendo-tabstrip-tab>
+
+    <kendo-tabstrip-tab [title]="'Variações'" [disabled]="referenciaId === '' ?
+      true : false">
+      <ng-template kendoTabContent>
+        <div class="d-flex flex-column align-items-center my-4"
+          *ngIf="grupoVariacaoIsEmpy else gridVariacao">
+          <h4>Grupo selecionado em referência não possui variações.</h4>
+          <p>Escolha as variações no cadastro de grupo para que seja possivel
+            selecionar. </p>
+        </div>
+        <ng-template #gridVariacao>
+          <incca-referencia-variacao-grid
+            [grupoId]='grupoId'
+            [referenciaId]='referenciaId'
+            [fabricanteId]='fabricanteId'
+            [colecaoId]='colecaoId'>
+          </incca-referencia-variacao-grid>
+        </ng-template>
+
+      </ng-template>
+    </kendo-tabstrip-tab>
+
+    <kendo-tabstrip-tab [title]="'Atributos'" [disabled]="referenciaId === '' ?
+      true : false">
+      <ng-template kendoTabContent>
+        <div class="d-flex flex-column align-items-center my-4"
+          *ngIf="grupoVariacaoIsEmpy else gridVariacao">
+          <h4>Grupo selecionado em referência não possui atributos.</h4>
+          <p>Escolha os atributos no cadastro de grupo para que seja possivel
+            selecionar. </p>
+        </div>
+        <ng-template #gridVariacao>
+          <div class="d-flex justify-content-center my-2">
+          </div>
+          <incca-referencia-atributo-grid [grupoId]='grupoId'
+            [referenciaId]='referenciaId'></incca-referencia-atributo-grid>
+        </ng-template>
+      </ng-template>
+    </kendo-tabstrip-tab>
+  </kendo-tabstrip>
+
+</div>

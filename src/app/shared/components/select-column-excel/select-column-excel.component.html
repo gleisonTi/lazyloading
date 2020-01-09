@@ -1,0 +1,20 @@
+<!-- <div *ngFor="let item of columns; let i = index">
+  <label class="k-form-field right">
+    <input
+      type="checkbox"
+      id="{{item.colunm}}"
+      class="k-checkbox"
+      />
+    <label class="k-checkbox-label" for="{{item.colunm}}">{{addSpace(item.colunm)}}</label>
+  </label>
+</div>
+ -->
+
+<kendo-grid [data]="view | async" [height]="400">
+    <kendo-grid-excel fileName="Products.xlsx">
+        <div *ngFor="let item of columns;" >
+            <kendo-excelexport-column field="{{item.colunm}}" title="{{addSpace(item.colunm)}}">
+            </kendo-excelexport-column>
+        </div>
+    </kendo-grid-excel>
+</kendo-grid>
